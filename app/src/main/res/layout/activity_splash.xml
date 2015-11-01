@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="60dp"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:focusableInTouchMode="true"
+    tools:context="com.pericstudio.drawit.Login" >
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/card_width"
+        android:layout_height="@dimen/card_height"
+        card_view:cardCornerRadius="@dimen/card_round_corner"
+        android:layout_centerHorizontal="true"
+        card_view:cardBackgroundColor="#B3E5FC"
+        card_view:cardElevation="@dimen/card_elevate">
+
+        <include layout="@layout/card_login"/>
+
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>
