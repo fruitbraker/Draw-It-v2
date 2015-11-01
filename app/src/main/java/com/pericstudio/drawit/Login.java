@@ -1,9 +1,10 @@
 package com.pericstudio.drawit;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,7 +32,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
-        setContentView(R.layout.activity_splash);
+        setContentView(R.layout.activity_login);
         init();
     }
 
@@ -59,21 +60,7 @@ public class Login extends AppCompatActivity {
         } else {
             InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-            Snackbar.make(view, "Logging in...", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            CMUser user = new CMUser(email, password);
-            user.login(this, new Response.Listener<LoginResponse>() {
-                @Override
-                public void onResponse(LoginResponse loginResponse) {
-                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), "Email or password is incorrect", Toast.LENGTH_LONG).show();
-                }
-            });
+            new LoginAsync().execute(email, password);
         }
     }
 
@@ -84,6 +71,43 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    private class LoginAsync extends AsyncTask<String, Void, Void> {
+
+        String email, password;
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = ProgressDialog.show(Login.this, "Logging in", "Please wait...");
+
+//            Snackbar.make(getCurrentFocus(), "Logging in...", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            email = params[0];
+            password = params[1];
+            CMUser user = new CMUser(email, password);
+            user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
+                @Override
+                public void onResponse(LoginResponse loginResponse) {
+                    dialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(getApplicationContext(), "Email or password is incorrect", Toast.LENGTH_LONG).show();
+                }
+            });
+            return null;
+        }
+
+
     }
 
 }

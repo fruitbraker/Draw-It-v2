@@ -20,7 +20,7 @@
             android:title="Tools" />
     </group>
 
-    <group android:checkableBehavior="single">
+    <item android:title="Others">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -31,6 +31,6 @@
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="Send" />
         </menu>
-    </group>
+    </item>
 
 </menu>
