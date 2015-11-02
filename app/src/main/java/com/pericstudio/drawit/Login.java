@@ -41,10 +41,13 @@ public class Login extends AppCompatActivity {
         boolean isAutoLog;
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
-        sharedPreferences = getSharedPreferences("LoginTest", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
         isAutoLog = sharedPreferences.getBoolean("AutoLogin", false);
         
-        if (isAutoLog) goToDashboard(); else init();
+        if(isAutoLog)
+            goToDashboard();
+        else
+            init();
     }
 
     private void goToDashboard() {
@@ -123,7 +126,10 @@ public class Login extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    volleyError.getCause().getMessage();
+                    if(volleyError.toString().equalsIgnoreCase("com.android.volley.ServerError"))
+                        Toast.makeText(getApplicationContext(), "Email/password is incorrect", Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "Error logging in. Check internet connection and try again", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             });

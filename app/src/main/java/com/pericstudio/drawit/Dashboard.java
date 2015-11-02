@@ -1,6 +1,8 @@
 package com.pericstudio.drawit;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -84,6 +86,11 @@ public class Dashboard extends AppCompatActivity
         //TODO swtich statements of drawer items with ids and stuff
         switch(item.getItemId()) {
             case R.id.nav_logout:
+                SharedPreferences sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("AutoLogin", false);
+                editor.putString("SessionToken", null);
+                editor.commit();
                 startActivity(new Intent(this, Login.class));
         }
 
