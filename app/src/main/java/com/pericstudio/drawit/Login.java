@@ -33,8 +33,7 @@ public class Login extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
 
-    
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +42,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
         isAutoLog = sharedPreferences.getBoolean("AutoLogin", false);
-        
-        if(isAutoLog)
+
+        if (isAutoLog)
             goToDashboard();
         else
             init();
@@ -72,9 +71,9 @@ public class Login extends AppCompatActivity {
     public void login(View view) {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
-        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Invalid email", Toast.LENGTH_LONG).show();
-        } else if(email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
+        } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
             Toast.makeText(this, "One or more of the fields are empty", Toast.LENGTH_LONG).show();
         } else {
             InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -114,7 +113,7 @@ public class Login extends AppCompatActivity {
             user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
-                    if(cbAutolog.isChecked()) {
+                    if (cbAutolog.isChecked()) {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean("AutoLogin", true);
                         editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
@@ -126,7 +125,7 @@ public class Login extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    if(volleyError.toString().equalsIgnoreCase("com.android.volley.ServerError"))
+                    if (volleyError.toString().equalsIgnoreCase("com.android.volley.ServerError"))
                         Toast.makeText(getApplicationContext(), "Email/password is incorrect", Toast.LENGTH_LONG).show();
                     else
                         Toast.makeText(getApplicationContext(), "Error logging in. Check internet connection and try again", Toast.LENGTH_LONG).show();
@@ -135,8 +134,6 @@ public class Login extends AppCompatActivity {
             });
             return null;
         }
-
-
+        
     }
-
 }
