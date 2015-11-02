@@ -3,6 +3,7 @@ package com.pericstudio.drawit;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,13 +29,26 @@ public class Login extends AppCompatActivity {
     private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
 
     private EditText etEmail, etPassword;
+    private CheckBox cbAutolog;
 
+    private SharedPreferences sharedPreferences;
+
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean isAutoLog;
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
-        init();
+        sharedPreferences = getSharedPreferences("LoginTest", Context.MODE_PRIVATE);
+        isAutoLog = sharedPreferences.getBoolean("AutoLogin", false);
+        
+        if (isAutoLog) goToDashboard(); else init();
+    }
+
+    private void goToDashboard() {
+        startActivity(new Intent(getApplicationContext(), Dashboard.class));
     }
 
     private void init() {
@@ -48,6 +63,7 @@ public class Login extends AppCompatActivity {
                 return false;
             }
         });
+        cbAutolog = (CheckBox) findViewById(R.id.cbAutoLog);
     }
 
     public void login(View view) {
@@ -95,13 +111,20 @@ public class Login extends AppCompatActivity {
             user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
+                    if(cbAutolog.isChecked()) {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean("AutoLogin", true);
+                        editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
+                        editor.commit();
+                    }
                     dialog.dismiss();
                     startActivity(new Intent(getApplicationContext(), Dashboard.class));
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), "Email or password is incorrect", Toast.LENGTH_LONG).show();
+                    volleyError.getCause().getMessage();
+                    dialog.dismiss();
                 }
             });
             return null;

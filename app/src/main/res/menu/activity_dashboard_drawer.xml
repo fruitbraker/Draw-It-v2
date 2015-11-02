@@ -20,7 +20,7 @@
             android:title="Tools" />
     </group>
 
-    <item android:title="Others">
+    <item android:title="Other">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -30,6 +30,10 @@
                 android:id="@+id/nav_send"
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="Send" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@android:drawable/ic_delete"
+                android:title="Logout"/>
         </menu>
     </item>
 
