@@ -10,6 +10,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.pericstudio.drawit.Dashboard"
-    tools:showIn="@layout/app_bar_dashboard">
+    tools:showIn="@layout/app_bar_dashboard"
+    android:background="#DDDDDD">
+
+    <view
+        android:id="@+id/recycler_view"
+        class="android.support.v7.widget.RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

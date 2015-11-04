@@ -1,5 +1,6 @@
 package com.pericstudio.drawit;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,22 +12,38 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMSessionToken;
 import com.pericstudio.drawit.music.MusicManager;
+
+import java.util.List;
 
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private boolean wasIntent;
 
+    private CMSessionToken sessionToken;
+    private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
+    private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
+
+    private List<Drawings> drawingsList;
+    private RecyclerView mRecyclerView;
+    private RecyclerViewAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -34,6 +51,21 @@ public class Dashboard extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final Dialog testDialog = new Dialog(Dashboard.this);
+                testDialog.setTitle("TEST TITLE!");
+                testDialog.setContentView(R.layout.dialog_test);
+
+                TextView name = (TextView) testDialog.findViewById(R.id.et_dialog_name);
+                TextView des = (TextView) testDialog.findViewById(R.id.et_dialog_desciption);
+
+                Button button = (Button) testDialog.findViewById(R.id.dialog_button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        testDialog.dismiss();
+                    }
+                });
+                testDialog.show();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -52,6 +84,10 @@ public class Dashboard extends AppCompatActivity
     }
 
     private void init() {
+        SharedPreferences sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+        String sessionTokenTransport =  sharedPreferences.getString("SessionToken", null);
+        if(sessionTokenTransport != null)
+            sessionToken = new CMSessionToken(sessionTokenTransport);
         wasIntent = false;
     }
 
