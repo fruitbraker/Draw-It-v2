@@ -113,12 +113,12 @@ public class Login extends AppCompatActivity {
             user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
+                    SharedPreferences.Editor editor = mSharedPreferences.edit();
+                    editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
                     if (cbAutolog.isChecked()) {
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putBoolean("AutoLogin", true);
-                        editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
-                        editor.commit();
                     }
+                    editor.commit();
                     dialog.dismiss();
                     wasIntent = true;
                     startActivity(new Intent(getApplicationContext(), Dashboard.class));
