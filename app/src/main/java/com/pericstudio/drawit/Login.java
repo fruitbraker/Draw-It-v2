@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.pericstudio.drawit.music.MusicManager;
 
 public class Login extends AppCompatActivity {
 
@@ -31,17 +32,19 @@ public class Login extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private CheckBox cbAutolog;
 
-    private SharedPreferences sharedPreferences;
-
+    private SharedPreferences mSharedPreferences;
+    private boolean wasIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean isAutoLog;
+        MusicManager.getMusicManager();
+        MusicManager.getMusicManager().playMusic("Dashboard", getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
-        sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
-        isAutoLog = sharedPreferences.getBoolean("AutoLogin", false);
+        mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+        isAutoLog = mSharedPreferences.getBoolean("AutoLogin", false);
 
         if (isAutoLog)
             goToDashboard();
@@ -50,6 +53,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void goToDashboard() {
+        wasIntent = true;
         startActivity(new Intent(getApplicationContext(), Dashboard.class));
     }
 
@@ -66,6 +70,7 @@ public class Login extends AppCompatActivity {
             }
         });
         cbAutolog = (CheckBox) findViewById(R.id.cbAutoLog);
+        wasIntent = false;
     }
 
     public void login(View view) {
@@ -84,11 +89,6 @@ public class Login extends AppCompatActivity {
 
     public void createAccount(View view) {
         startActivity(new Intent(this, CreateAccount.class));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     private class LoginAsync extends AsyncTask<String, Void, Void> {
@@ -114,13 +114,15 @@ public class Login extends AppCompatActivity {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
                     if (cbAutolog.isChecked()) {
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
                         editor.putBoolean("AutoLogin", true);
                         editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
                         editor.commit();
                     }
                     dialog.dismiss();
+                    wasIntent = true;
                     startActivity(new Intent(getApplicationContext(), Dashboard.class));
+
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -134,6 +136,22 @@ public class Login extends AppCompatActivity {
             });
             return null;
         }
-        
+
+    }
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(!wasIntent)
+            MusicManager.getMusicManager().pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicManager.getMusicManager().resume();
+        wasIntent = false;
     }
 }

@@ -16,8 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.pericstudio.drawit.music.MusicManager;
+
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private boolean wasIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,12 @@ public class Dashboard extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        init();
+    }
+
+    private void init() {
+        wasIntent = false;
     }
 
     @Override
@@ -91,6 +101,8 @@ public class Dashboard extends AppCompatActivity
                 editor.putBoolean("AutoLogin", false);
                 editor.putString("SessionToken", null);
                 editor.commit();
+                wasIntent = true;
+                MusicManager.getMusicManager().setContinuePlay(true);
                 startActivity(new Intent(this, Login.class));
         }
 
@@ -98,4 +110,19 @@ public class Dashboard extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(!wasIntent)
+            MusicManager.getMusicManager().pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicManager.getMusicManager().resume();
+        wasIntent = false;
+    }
+
 }
