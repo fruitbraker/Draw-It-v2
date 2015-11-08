@@ -49,6 +49,8 @@ public class Dashboard extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapter mRecycleAdapter;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +67,8 @@ public class Dashboard extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         init();
         populateDashboard();
     }
@@ -89,7 +92,8 @@ public class Dashboard extends AppCompatActivity
                             LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
                                 @Override
                                 public void onResponse(CMObjectResponse response) {
-
+                                    if(mSwipeRefreshLayout.isRefreshing())
+                                        mSwipeRefreshLayout.setRefreshing(false);
                                     mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
                                     mRecyclerView.setAdapter(mRecycleAdapter);
                                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -262,5 +266,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     public void onRefresh() {
         Toast.makeText(getApplicationContext(), "RESRESHING WOOHOO", Toast.LENGTH_LONG).show();
+        populateDashboard();
     }
 }
