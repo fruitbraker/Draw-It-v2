@@ -109,20 +109,24 @@ public class Login extends AppCompatActivity {
         protected Void doInBackground(String... params) {
             email = params[0];
             password = params[1];
+
             CMUser user = new CMUser(email, password);
+
+            final SharedPreferences.Editor editor = mSharedPreferences.edit();
             user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
-                    SharedPreferences.Editor editor = mSharedPreferences.edit();
                     editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
+                    editor.putString("UserID", loginResponse.getUserObject(User.class).getObjectId());
+
                     if (cbAutolog.isChecked()) {
                         editor.putBoolean("AutoLogin", true);
                     }
                     editor.commit();
                     dialog.dismiss();
                     wasIntent = true;
-                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
 
+                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -139,8 +143,6 @@ public class Login extends AppCompatActivity {
 
     }
 
-
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -154,4 +156,5 @@ public class Login extends AppCompatActivity {
         MusicManager.getMusicManager().resume();
         wasIntent = false;
     }
+
 }

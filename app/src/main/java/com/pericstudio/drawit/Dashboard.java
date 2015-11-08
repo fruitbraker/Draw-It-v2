@@ -7,11 +7,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,15 +20,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.SearchQuery;
+import com.cloudmine.api.db.LocallySavableCMObject;
+import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.music.MusicManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dashboard extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     private boolean wasIntent;
 
@@ -35,9 +45,9 @@ public class Dashboard extends AppCompatActivity
     private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
     private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
 
-    private List<Drawings> drawingsList;
+    private List<Drawing> drawingList;
     private RecyclerView mRecyclerView;
-    private RecyclerViewAdapter adapter;
+    private RecyclerViewAdapter mRecycleAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,30 +56,6 @@ public class Dashboard extends AppCompatActivity
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Dialog testDialog = new Dialog(Dashboard.this);
-                testDialog.setTitle("TEST TITLE!");
-                testDialog.setContentView(R.layout.dialog_test);
-
-                TextView name = (TextView) testDialog.findViewById(R.id.et_dialog_name);
-                TextView des = (TextView) testDialog.findViewById(R.id.et_dialog_desciption);
-
-                Button button = (Button) testDialog.findViewById(R.id.dialog_button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        testDialog.dismiss();
-                    }
-                });
-                testDialog.show();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -81,13 +67,107 @@ public class Dashboard extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         init();
+        populateDashboard();
+    }
+
+    private void populateDashboard() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_dashboard);
+        SharedPreferences sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+        final String userID = sharedPreferences.getString("UserID", null);
+
+        LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                        .equal(userID).searchQuery(),
+                new Response.Listener<CMObjectResponse>() {
+                    @Override
+                    public void onResponse(CMObjectResponse response) {
+                        List<CMObject> filler = response.getObjects();
+                        UserObjectIDs user = (UserObjectIDs) filler.get(0);
+                        ArrayList<String> drawingIDs = user.getInProgressDrawingIDs();
+
+                        LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
+                            @Override
+                            public void onResponse(CMObjectResponse response) {
+                                mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
+                                mRecyclerView.setAdapter(mRecycleAdapter);
+                                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            }
+                        });
+
+                    }
+                });
+
     }
 
     private void init() {
         SharedPreferences sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
-        String sessionTokenTransport =  sharedPreferences.getString("SessionToken", null);
-        if(sessionTokenTransport != null)
+        String sessionTokenTransport = sharedPreferences.getString("SessionToken", null);
+        if (sessionTokenTransport != null) {
             sessionToken = new CMSessionToken(sessionTokenTransport);
+        }
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+
+            TextView tvName;
+            TextView tvDes;
+
+            @Override
+            public void onClick(View view) {
+                final Dialog testDialog = new Dialog(Dashboard.this);
+                testDialog.setTitle("TEST TITLE!");
+                testDialog.setContentView(R.layout.dialog_test);
+
+                tvName = (TextView) testDialog.findViewById(R.id.et_dialog_name);
+                tvDes = (TextView) testDialog.findViewById(R.id.et_dialog_desciption);
+
+                Button button = (Button) testDialog.findViewById(R.id.dialog_button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String name = tvName.getText().toString();
+                        final String des = tvDes.getText().toString();
+
+                        final LocallySavableCMObject drawing = new Drawing(name, des);
+
+                        drawing.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                            @Override
+                            public void onResponse(ObjectModificationResponse response) {
+                                SharedPreferences mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+                                final String userID = mSharedPreferences.getString("UserID", null);
+                                final String drawingID = response.getCreatedObjectIds().get(0);
+                                if (userID != null) {
+
+                                    LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                                                    .equal(userID).searchQuery(),
+                                            new Response.Listener<CMObjectResponse>() {
+                                                @Override
+                                                public void onResponse(CMObjectResponse response) {
+                                                    List<CMObject> filler = response.getObjects();
+                                                    UserObjectIDs user = (UserObjectIDs) filler.get(0);
+                                                    user.addInProgress(drawingID);
+                                                    user.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                                                        @Override
+                                                        public void onResponse(ObjectModificationResponse modificationResponse) {
+                                                            testDialog.dismiss();
+                                                        }
+                                                    }, new Response.ErrorListener() {
+                                                        @Override
+                                                        public void onErrorResponse(VolleyError volleyError) {
+
+                                                        }
+                                                    });
+                                                }
+                                            });
+
+                                } else
+                                    Toast.makeText(Dashboard.this, "Fatal error occurred. Logout and login again", Toast.LENGTH_LONG);
+                            }
+                        });
+                    }
+                });
+                testDialog.show();
+            }
+        });
         wasIntent = false;
     }
 
@@ -130,16 +210,29 @@ public class Dashboard extends AppCompatActivity
         int id = item.getItemId();
 
         //TODO swtich statements of drawer items with ids and stuff
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.nav_logout:
-                SharedPreferences sharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
                 editor.putBoolean("AutoLogin", false);
                 editor.putString("SessionToken", null);
                 editor.commit();
                 wasIntent = true;
                 MusicManager.getMusicManager().setContinuePlay(true);
+
                 startActivity(new Intent(this, Login.class));
+            case R.id.nav_camara:
+                SharedPreferences mSharedPreferences1 = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+                final String userID = mSharedPreferences1.getString("UserID", null);
+                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID").equal(userID).searchQuery(),
+                        new Response.Listener<CMObjectResponse>() {
+                            @Override
+                            public void onResponse(CMObjectResponse response) {
+                                List<CMObject> fillerList = response.getObjects();
+                                Toast.makeText(getApplicationContext(), fillerList.size() + "", Toast.LENGTH_LONG).show();
+
+                            }
+                        });
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -161,4 +254,9 @@ public class Dashboard extends AppCompatActivity
         wasIntent = false;
     }
 
+    //This method is for the swiprefreshlayout
+    @Override
+    public void onRefresh() {
+        Toast.makeText(getApplicationContext(), "RESRESHING WOOHOO", Toast.LENGTH_LONG).show();
+    }
 }

@@ -9,9 +9,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
+            android:paddingTop="8dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="18sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ASDFASDFSADFADSF"/>
+            android:text="Title here"
+            android:id="@+id/tv_card_title"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:paddingTop="8dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Des here"
+            android:id="@+id/tv_card_des"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/tv_card_title"
+            android:layout_alignEnd="@+id/tv_card_title" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/button4"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

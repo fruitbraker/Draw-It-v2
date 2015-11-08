@@ -16,6 +16,7 @@ import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 
 import java.util.List;
 
@@ -80,9 +81,7 @@ public class CreateAccount extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Snackbar.make(getCurrentFocus(), "Creating account...", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
+            Snackbar.make(getCurrentFocus(), "Creating account...", Snackbar.LENGTH_LONG).show();
         }
 
         @Override
@@ -118,7 +117,15 @@ public class CreateAccount extends AppCompatActivity {
                                                         @Override
                                                         public void onResponse(CreationResponse creationResponse) {
                                                             Toast.makeText(getApplicationContext(), "Account Created Successfully", Toast.LENGTH_LONG).show();
-                                                            startActivity(new Intent(getApplicationContext(), Login.class));
+                                                            final String userID = creationResponse.getObjectId();
+
+                                                            UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                                            userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                                                                @Override
+                                                                public void onResponse(ObjectModificationResponse objectModificationResponse) {
+                                                                    startActivity(new Intent(getApplicationContext(), Login.class));
+                                                                }
+                                                            });
                                                         }
                                                     });
                                                 }
@@ -128,9 +135,6 @@ public class CreateAccount extends AppCompatActivity {
                             }
                         }
                     });
-
-
-
             return null;
         }
     }

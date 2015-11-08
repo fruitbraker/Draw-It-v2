@@ -6,6 +6,8 @@ public class User extends CMUser {
 
     private String userEmail, userUsername;
 
+    private byte[] profilePicture;
+
     public User() {
         super();
     }
@@ -14,6 +16,7 @@ public class User extends CMUser {
         super(userEmail, userUsername, password);
         this.userEmail = userEmail;
         this.userUsername = userUsername;
+        profilePicture = null;
     }
 
     public String getUserEmail() {
@@ -30,5 +33,13 @@ public class User extends CMUser {
 
     public void setUserUsername(String userUsername) {
         this.userUsername = userUsername;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] newProfilePicuture) {
+        profilePicture = newProfilePicuture;
     }
 }

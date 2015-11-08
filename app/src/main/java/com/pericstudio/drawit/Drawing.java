@@ -1,8 +1,21 @@
 package com.pericstudio.drawit;
 
-public class Drawings {
+import com.cloudmine.api.db.LocallySavableCMObject;
+
+public class Drawing extends LocallySavableCMObject {
+
     private String title;
     private String description;
+
+    public Drawing() {
+        super();
+    }
+
+    public Drawing(String title, String description) {
+        this();
+        this.title = title;
+        this.description = description;
+    }
 
     public String getTitle() {
         return title;
