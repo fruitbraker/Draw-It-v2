@@ -82,16 +82,20 @@ public class Dashboard extends AppCompatActivity
                     public void onResponse(CMObjectResponse response) {
                         List<CMObject> filler = response.getObjects();
                         UserObjectIDs user = (UserObjectIDs) filler.get(0);
+
                         ArrayList<String> drawingIDs = user.getInProgressDrawingIDs();
 
-                        LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
-                            @Override
-                            public void onResponse(CMObjectResponse response) {
-                                mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
-                                mRecyclerView.setAdapter(mRecycleAdapter);
-                                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                            }
-                        });
+                        if(drawingIDs.size() > 0) {
+                            LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
+                                @Override
+                                public void onResponse(CMObjectResponse response) {
+
+                                    mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
+                                    mRecyclerView.setAdapter(mRecycleAdapter);
+                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                }
+                            });
+                        }
 
                     }
                 });

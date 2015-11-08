@@ -88,6 +88,7 @@ public class Login extends AppCompatActivity {
     }
 
     public void createAccount(View view) {
+        wasIntent = true;
         startActivity(new Intent(this, CreateAccount.class));
     }
 
