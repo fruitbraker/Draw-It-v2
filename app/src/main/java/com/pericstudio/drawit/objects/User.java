@@ -1,4 +1,4 @@
-package com.pericstudio.drawit;
+package com.pericstudio.drawit.objects;
 
 import com.cloudmine.api.CMUser;
 

@@ -1,4 +1,4 @@
-package com.pericstudio.drawit;
+package com.pericstudio.drawit.activities;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -31,12 +31,16 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.pericstudio.drawit.objects.Drawing;
+import com.pericstudio.drawit.R;
+import com.pericstudio.drawit.adapters.RecyclerViewAdapter;
+import com.pericstudio.drawit.objects.UserObjectIDs;
 import com.pericstudio.drawit.music.MusicManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dashboard extends AppCompatActivity
+public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     private boolean wasIntent;
@@ -121,7 +125,7 @@ public class Dashboard extends AppCompatActivity
 
             @Override
             public void onClick(View view) {
-                final Dialog testDialog = new Dialog(Dashboard.this);
+                final Dialog testDialog = new Dialog(DashboardActivity.this);
                 testDialog.setTitle("TEST TITLE!");
                 testDialog.setContentView(R.layout.dialog_test);
 
@@ -168,7 +172,7 @@ public class Dashboard extends AppCompatActivity
                                             });
 
                                 } else
-                                    Toast.makeText(Dashboard.this, "Fatal error occurred. Logout and login again", Toast.LENGTH_LONG);
+                                    Toast.makeText(DashboardActivity.this, "Fatal error occurred. Logout and login again", Toast.LENGTH_LONG);
                             }
                         });
                     }
@@ -228,7 +232,7 @@ public class Dashboard extends AppCompatActivity
                 wasIntent = true;
                 MusicManager.getMusicManager().setContinuePlay(true);
 
-                startActivity(new Intent(this, Login.class));
+                startActivity(new Intent(this, LoginActivity.class));
             case R.id.nav_camara:
                 SharedPreferences mSharedPreferences1 = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
                 final String userID = mSharedPreferences1.getString("UserID", null);

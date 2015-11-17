@@ -1,4 +1,4 @@
-package com.pericstudio.drawit;
+package com.pericstudio.drawit.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cloudmine.api.CMObject;
+import com.pericstudio.drawit.R;
+import com.pericstudio.drawit.objects.Drawing;
 
 import java.util.Collections;
 import java.util.List;

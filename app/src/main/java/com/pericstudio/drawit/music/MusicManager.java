@@ -9,7 +9,7 @@ import com.pericstudio.drawit.R;
 public class MusicManager {
     private static MusicManager musicManager;
 
-    private final static String DASHBOARD_MUSIC_TAG = "Dashboard";
+    private final static String DASHBOARD_MUSIC_TAG = "DashboardActivity";
     private final static String DRAWING_MUSIC_TAG = "Drawing";
 
     private static MediaPlayer mediaPlayer = null;

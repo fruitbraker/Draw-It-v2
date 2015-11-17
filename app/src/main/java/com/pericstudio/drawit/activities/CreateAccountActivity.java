@@ -1,4 +1,4 @@
-package com.pericstudio.drawit;
+package com.pericstudio.drawit.activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,10 +17,13 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.pericstudio.drawit.R;
+import com.pericstudio.drawit.objects.User;
+import com.pericstudio.drawit.objects.UserObjectIDs;
 
 import java.util.List;
 
-public class CreateAccount extends AppCompatActivity {
+public class CreateAccountActivity extends AppCompatActivity {
 
     // Find this in your developer console
     private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
@@ -123,7 +126,7 @@ public class CreateAccount extends AppCompatActivity {
                                                             userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
                                                                 @Override
                                                                 public void onResponse(ObjectModificationResponse objectModificationResponse) {
-                                                                    startActivity(new Intent(getApplicationContext(), Login.class));
+                                                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                                                 }
                                                             });
                                                         }

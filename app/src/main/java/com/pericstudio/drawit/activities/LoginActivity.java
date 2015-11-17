@@ -1,4 +1,4 @@
-package com.pericstudio.drawit;
+package com.pericstudio.drawit.activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -22,9 +22,11 @@ import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.pericstudio.drawit.R;
+import com.pericstudio.drawit.objects.User;
 import com.pericstudio.drawit.music.MusicManager;
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
     private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
@@ -40,7 +42,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         boolean isAutoLog;
         MusicManager.getMusicManager();
-        MusicManager.getMusicManager().playMusic("Dashboard", getApplicationContext());
+        MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
@@ -54,7 +56,7 @@ public class Login extends AppCompatActivity {
 
     private void goToDashboard() {
         wasIntent = true;
-        startActivity(new Intent(getApplicationContext(), Dashboard.class));
+        startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
     }
 
     private void init() {
@@ -89,7 +91,7 @@ public class Login extends AppCompatActivity {
 
     public void createAccount(View view) {
         wasIntent = true;
-        startActivity(new Intent(this, CreateAccount.class));
+        startActivity(new Intent(this, CreateAccountActivity.class));
     }
 
     private class LoginAsync extends AsyncTask<String, Void, Void> {
@@ -100,7 +102,7 @@ public class Login extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = ProgressDialog.show(Login.this, "Logging in", "Please wait...");
+            dialog = ProgressDialog.show(LoginActivity.this, "Logging in", "Please wait...");
 
 //            Snackbar.make(getCurrentFocus(), "Logging in...", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show();
@@ -127,7 +129,7 @@ public class Login extends AppCompatActivity {
                     dialog.dismiss();
                     wasIntent = true;
 
-                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
                 }
             }, new Response.ErrorListener() {
                 @Override
