@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -23,8 +22,9 @@ import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.pericstudio.drawit.R;
-import com.pericstudio.drawit.objects.User;
 import com.pericstudio.drawit.music.MusicManager;
+import com.pericstudio.drawit.objects.User;
+import com.pericstudio.drawit.utils.T;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -79,9 +79,9 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Invalid email", Toast.LENGTH_LONG).show();
+            T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
-            Toast.makeText(this, "One or more of the fields are empty", Toast.LENGTH_LONG).show();
+            T.showLong(this, "One ore more of the fields are empty");
         } else {
             InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -135,9 +135,9 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
                     if (volleyError.toString().equalsIgnoreCase("com.android.volley.ServerError"))
-                        Toast.makeText(getApplicationContext(), "Email/password is incorrect", Toast.LENGTH_LONG).show();
+                        T.showLong(getApplicationContext(), "Email/password is incorrect");
                     else
-                        Toast.makeText(getApplicationContext(), "Error logging in. Check internet connection and try again", Toast.LENGTH_LONG).show();
+                        T.showLong(getApplicationContext(), "Connection error. Please check network settings and try again");
                     dialog.dismiss();
                 }
             });

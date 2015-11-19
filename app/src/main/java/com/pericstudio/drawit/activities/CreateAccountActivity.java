@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.cloudmine.api.CMApiCredentials;
@@ -20,6 +19,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.objects.User;
 import com.pericstudio.drawit.objects.UserObjectIDs;
+import com.pericstudio.drawit.utils.T;
 
 import java.util.List;
 
@@ -56,13 +56,13 @@ public class CreateAccountActivity extends AppCompatActivity {
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
         if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Invalid Email", Toast.LENGTH_SHORT).show();
+            T.showLong(this, "Invalid Email");
         } else if(username.equalsIgnoreCase("") || password.equalsIgnoreCase("") || confirmPassword.equalsIgnoreCase(""))
-            Toast.makeText(this, "One or more fields are missing", Toast.LENGTH_SHORT).show();
+            T.showLong(this, "One or more fields are missing");
         else if(!password.equalsIgnoreCase(confirmPassword)) {
-            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            T.showLong(this, "Passwords do not match");
         } else if (password.length() < 5) {
-            Toast.makeText(this, "Password needs to be at least 5 characters", Toast.LENGTH_LONG).show();
+            T.showLong(this, "Password needs to be at least 5 characters long");
         } else {
             clearToCreate = true;
         }
@@ -102,7 +102,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                             List<CMObject> users = cmObjectResponse.getObjects();
 
                             if (users.size() > 0) {
-                                Toast.makeText(getApplicationContext(), "Email is in use", Toast.LENGTH_LONG).show();
+                                T.showLong(getApplicationContext(), "Email is in use");
                             } else {
                                 CMUser.searchUserProfiles(getApplicationContext(),
                                         SearchQuery.filter("userUsername").equal(username).searchQuery(),
@@ -113,13 +113,13 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                 List<CMObject> users = cmObjectResponse.getObjects();
 
                                                 if(users.size() > 0) {
-                                                    Toast.makeText(getApplicationContext(), "Username is already taken", Toast.LENGTH_LONG).show();
+                                                    T.showLong(getApplicationContext(), "Username is already taken");
                                                 } else {
                                                     User newUser = new User(email, username, password);
                                                     newUser.create(getApplicationContext(), new Response.Listener<CreationResponse>() {
                                                         @Override
                                                         public void onResponse(CreationResponse creationResponse) {
-                                                            Toast.makeText(getApplicationContext(), "Account Created Successfully", Toast.LENGTH_LONG).show();
+                                                            T.showLong(getApplicationContext(), "Account created successfully");
                                                             final String userID = creationResponse.getObjectId();
 
                                                             UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
