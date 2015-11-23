@@ -19,12 +19,20 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
+import com.cloudmine.api.SearchQuery;
+import com.cloudmine.api.db.LocallySavableCMObject;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.objects.User;
+import com.pericstudio.drawit.objects.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -56,7 +64,31 @@ public class LoginActivity extends AppCompatActivity {
 
     private void goToDashboard() {
         wasIntent = true;
-        startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+        final ProgressDialog dialog;
+        dialog = ProgressDialog.show(this, "Logging in", "Please wait...");
+
+        final String userID = mSharedPreferences.getString("UserID", null);
+
+        if(userID != null) {
+            LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                    .equal(userID).searchQuery(), new Response.Listener<CMObjectResponse>() {
+                @Override
+                public void onResponse(CMObjectResponse cmObjectResponse) {
+                    List<CMObject> cmObjectList = cmObjectResponse.getObjects();
+                    UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
+                    ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
+                    if (drawings.size() > 0) {
+                        dialog.dismiss();
+                        startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    } else {
+                        dialog.dismiss();
+                        startActivity(new Intent(getApplicationContext(), DashboardActivityNoDrawing.class));
+                    }
+                }
+            });
+        } else
+            T.showLong(this, "Login failed. Please login again.");
+        dialog.dismiss();
     }
 
     private void init() {
@@ -81,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
-            T.showLong(this, "One ore more of the fields are empty");
+            T.showLong(this, "One or more of the fields are empty");
         } else {
             InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -119,17 +151,38 @@ public class LoginActivity extends AppCompatActivity {
             user.login(getApplicationContext(), new Response.Listener<LoginResponse>() {
                 @Override
                 public void onResponse(LoginResponse loginResponse) {
+                    final String userID = loginResponse.getUserObject(User.class).getObjectId();
+
                     editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
-                    editor.putString("UserID", loginResponse.getUserObject(User.class).getObjectId());
+                    editor.putString("UserID", userID);
 
                     if (cbAutolog.isChecked()) {
                         editor.putBoolean("AutoLogin", true);
                     }
                     editor.commit();
-                    dialog.dismiss();
-                    wasIntent = true;
 
-                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                            .equal(userID).searchQuery(), new Response.Listener<CMObjectResponse>() {
+                        @Override
+                        public void onResponse(CMObjectResponse cmObjectResponse) {
+                            List<CMObject> cmObjectList = cmObjectResponse.getObjects();
+                            UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
+                            ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
+                            if (drawings.size() > 0) {
+                                dialog.dismiss();
+                                wasIntent = true;
+                                T.showShortDebug(getApplicationContext(), "Drawing");
+                                startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                            }
+                            else {
+                                dialog.dismiss();
+                                wasIntent = true;
+                                T.showShortDebug(getApplicationContext(), "No Drawing");
+                                startActivity(new Intent(getApplicationContext(), DashboardActivityNoDrawing.class));
+                            }
+                        }
+                    });
+
                 }
             }, new Response.ErrorListener() {
                 @Override

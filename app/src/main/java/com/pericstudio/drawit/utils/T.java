@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 public class T {
-    private static final boolean isDebug = false;
+    private static final boolean isDebug = true;
 
     public static void showLong(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
