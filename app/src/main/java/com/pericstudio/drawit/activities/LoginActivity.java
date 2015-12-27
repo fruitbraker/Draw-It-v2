@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean isAutoLog;
-        MusicManager.getMusicManager();
         MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
@@ -77,13 +76,8 @@ public class LoginActivity extends AppCompatActivity {
                     List<CMObject> cmObjectList = cmObjectResponse.getObjects();
                     UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
                     ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
-                    if (drawings.size() > 0) {
-                        dialog.dismiss();
-                        startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-                    } else {
-                        dialog.dismiss();
-                        startActivity(new Intent(getApplicationContext(), DashboardActivityNoDrawing.class));
-                    }
+                    dialog.dismiss();
+                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
                 }
             });
         } else
@@ -168,18 +162,11 @@ public class LoginActivity extends AppCompatActivity {
                             List<CMObject> cmObjectList = cmObjectResponse.getObjects();
                             UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
                             ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
-                            if (drawings.size() > 0) {
-                                dialog.dismiss();
-                                wasIntent = true;
-                                T.showShortDebug(getApplicationContext(), "Drawing");
-                                startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-                            }
-                            else {
-                                dialog.dismiss();
-                                wasIntent = true;
-                                T.showShortDebug(getApplicationContext(), "No Drawing");
-                                startActivity(new Intent(getApplicationContext(), DashboardActivityNoDrawing.class));
-                            }
+                            dialog.dismiss();
+                            wasIntent = true;
+                            T.showShortDebug(getApplicationContext(), "Drawing");
+                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+
                         }
                     });
 

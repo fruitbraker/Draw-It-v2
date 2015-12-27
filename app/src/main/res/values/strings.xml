@@ -22,4 +22,5 @@
 
     <!-- Facebook stuff -->
     <string name="facebook_app_id">916434691781436</string>
+    <string name="no_drawings">You currently have no drawings that is your turn.</string>
 </resources>

@@ -10,12 +10,26 @@
     android:background="#DDDDDD">
 
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_dashboard"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/no_drawings"
+        android:id="@+id/tv_no_drawing"
+        android:gravity="center" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/inProgressSwipeRefresh">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 

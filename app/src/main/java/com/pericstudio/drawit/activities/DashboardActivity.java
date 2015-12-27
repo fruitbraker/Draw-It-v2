@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     private boolean wasIntent;
 
@@ -52,8 +53,11 @@ public class DashboardActivity extends AppCompatActivity
     private List<Drawing> drawingList;
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapter mRecycleAdapter;
+    private TextView noDrawingTv;
 
     private SharedPreferences mSharedPreferences;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
@@ -83,11 +87,26 @@ public class DashboardActivity extends AppCompatActivity
                             LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
                                 @Override
                                 public void onResponse(CMObjectResponse response) {
+                                    noDrawingTv.setVisibility(View.INVISIBLE);
+                                    mRecyclerView.setVisibility(View.VISIBLE);
                                     mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
                                     mRecyclerView.setAdapter(mRecycleAdapter);
                                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                    if(swipeRefreshLayout.isRefreshing()) {
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
                                 }
                             });
+                        } else {
+                            List<CMObject> dummyData = new ArrayList<CMObject>();
+                            mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
+                            mRecyclerView.setAdapter(mRecycleAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            noDrawingTv.setVisibility(View.VISIBLE);
+                            if(swipeRefreshLayout.isRefreshing()) {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
                         }
 
                     }
@@ -109,6 +128,12 @@ public class DashboardActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        noDrawingTv = (TextView) findViewById(R.id.tv_no_drawing);
+        noDrawingTv.setVisibility(View.INVISIBLE);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.inProgressSwipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         String sessionTokenTransport = mSharedPreferences.getString("SessionToken", null);
         if (sessionTokenTransport != null) {
@@ -162,7 +187,7 @@ public class DashboardActivity extends AppCompatActivity
                                                     }, new Response.ErrorListener() {
                                                         @Override
                                                         public void onErrorResponse(VolleyError volleyError) {
-
+                                                            T.showShort(getApplicationContext(), volleyError.getMessage());
                                                         }
                                                     });
                                                 }
@@ -263,4 +288,8 @@ public class DashboardActivity extends AppCompatActivity
         wasIntent = false;
     }
 
+    @Override
+    public void onRefresh() {
+        populateDashboard();
+    }
 }
