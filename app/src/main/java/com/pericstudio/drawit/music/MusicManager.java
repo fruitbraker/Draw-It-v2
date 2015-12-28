@@ -71,4 +71,7 @@ public class MusicManager {
         return musicManager;
     }
 
+    public static MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
 }

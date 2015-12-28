@@ -49,7 +49,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean isAutoLog;
-        MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
+        if(!MusicManager.getMediaPlayer().isPlaying()) {
+            MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
+        }
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
