@@ -3,7 +3,6 @@ package com.pericstudio.drawit.activities;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +18,7 @@ import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.objects.User;
 import com.pericstudio.drawit.objects.UserObjectIDs;
+import com.pericstudio.drawit.utils.S;
 import com.pericstudio.drawit.utils.T;
 
 import java.util.List;
@@ -84,7 +84,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Snackbar.make(getCurrentFocus(), "Creating account...", Snackbar.LENGTH_LONG).show();
+            S.showSnackLong(getCurrentFocus(), "Creating account...");
         }
 
         @Override
@@ -141,4 +141,5 @@ public class CreateAccountActivity extends AppCompatActivity {
             return null;
         }
     }
+
 }

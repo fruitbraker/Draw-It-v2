@@ -113,4 +113,5 @@ public class UserObjectIDs extends LocallySavableCMObject {
         inProgressDrawingIDs.remove(drawingID);
         completedDrawingIDs.add(drawingID);
     }
+
 }

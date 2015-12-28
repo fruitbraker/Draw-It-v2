@@ -292,4 +292,5 @@ public class DashboardActivity extends AppCompatActivity
     public void onRefresh() {
         populateDashboard();
     }
+
 }

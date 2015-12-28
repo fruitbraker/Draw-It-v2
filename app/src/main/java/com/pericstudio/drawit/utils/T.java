@@ -23,4 +23,5 @@ public class T {
         if(isDebug)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
+
 }

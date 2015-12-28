@@ -22,7 +22,7 @@ public class MusicManager {
             mediaPlayer = null;
         }
 
-        if(!continuePlay) {
+        if (!continuePlay) {
             switch (musicName) {
                 case DASHBOARD_MUSIC_TAG:
                     mediaPlayer = MediaPlayer.create(context, R.raw.draw_it_dashboard);
@@ -74,4 +74,5 @@ public class MusicManager {
     public static MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
+
 }

@@ -42,4 +42,5 @@ public class User extends CMUser {
     public void setProfilePicture(byte[] newProfilePicuture) {
         profilePicture = newProfilePicuture;
     }
+
 }
