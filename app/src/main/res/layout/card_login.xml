@@ -75,8 +75,16 @@
         android:layout_height="wrap_content"
         android:text="Stay Logged In"
         android:id="@+id/cbAutoLog"
-        android:layout_below="@+id/etLoginPassword"
+        android:layout_below="@+id/login_button_fb"
         android:layout_alignRight="@+id/etLoginPassword"
         android:layout_alignEnd="@+id/etLoginPassword" />
+
+    <com.facebook.login.widget.LoginButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_button_fb"
+        android:layout_below="@+id/etLoginPassword"
+        android:layout_alignRight="@+id/cbAutoLog"
+        android:layout_alignEnd="@+id/cbAutoLog" />
 
 </RelativeLayout>

@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
 import com.cloudmine.api.SearchQuery;
@@ -47,8 +46,6 @@ public class DashboardActivity extends AppCompatActivity
     private boolean wasIntent;
 
     private CMSessionToken sessionToken;
-    private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
-    private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
 
     private List<Drawing> drawingList;
     private RecyclerView mRecyclerView;
@@ -64,7 +61,6 @@ public class DashboardActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
 
         init();
     }
@@ -255,6 +251,7 @@ public class DashboardActivity extends AppCompatActivity
                 MusicManager.getMusicManager().setContinuePlay(true);
 
                 startActivity(new Intent(this, LoginActivity.class));
+                break;
             case R.id.nav_camara:
                 SharedPreferences mSharedPreferences1 = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
                 final String userID = mSharedPreferences1.getString("UserID", null);
@@ -267,6 +264,9 @@ public class DashboardActivity extends AppCompatActivity
 
                             }
                         });
+                break;
+            default:
+                T.showLong(getApplicationContext(), "Something bugged out. Submit a bug report at pericappstudio@gmail.com");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

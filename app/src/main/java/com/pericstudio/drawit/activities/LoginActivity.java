@@ -15,16 +15,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.objects.User;
@@ -32,15 +39,15 @@ import com.pericstudio.drawit.objects.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
-    private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
-
     private EditText etEmail, etPassword;
     private CheckBox cbAutolog;
+    private LoginButton loginButton;
+    private CallbackManager callbackManager;
 
     private SharedPreferences mSharedPreferences;
     private boolean wasIntent;
@@ -48,12 +55,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boolean isAutoLog;
-        if(!MusicManager.getMediaPlayer().isPlaying()) {
-            MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
-        }
-        CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_login);
+        boolean isAutoLog;
+        FacebookSdk.sdkInitialize(getApplicationContext());
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
         isAutoLog = mSharedPreferences.getBoolean("AutoLogin", false);
 
@@ -100,7 +104,38 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         cbAutolog = (CheckBox) findViewById(R.id.cbAutoLog);
+        loginButton = (LoginButton) findViewById(R.id.login_button_fb);
+
+        callbackManager = CallbackManager.Factory.create();
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
+
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
         wasIntent = false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     public void login(View view) {
@@ -131,9 +166,6 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = ProgressDialog.show(LoginActivity.this, "Logging in", "Please wait...");
-
-//            Snackbar.make(getCurrentFocus(), "Logging in...", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show();
         }
 
         @Override
@@ -193,6 +225,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onPause();
         if(!wasIntent)
             MusicManager.getMusicManager().pause();
+        else
+            finish();
+        AppEventsLogger.activateApp(this);
     }
 
     @Override
@@ -200,6 +235,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         MusicManager.getMusicManager().resume();
         wasIntent = false;
+        AppEventsLogger.deactivateApp(this);
     }
 
 }

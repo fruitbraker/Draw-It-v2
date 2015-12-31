@@ -19,8 +19,11 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
 
+    <!-- Strings related to drawing -->
+    <string name="no_drawings">You currently have no drawings that is your turn.</string>
+
 
     <!-- Facebook stuff -->
-    <string name="facebook_app_id">916434691781436</string>
-    <string name="no_drawings">You currently have no drawings that is your turn.</string>
+    <string name="facebook_app_id">600921753379953</string>
+
 </resources>
