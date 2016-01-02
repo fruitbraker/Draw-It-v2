@@ -24,18 +24,25 @@ public class SplashActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         MusicManager.getMusicManager();
         MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
+        sleepYo();
 
-        try {
-            Thread.sleep(1000);
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-        } catch (InterruptedException ie) {
-            T.showShortDebug(getApplicationContext(), "One second sleep. SplashActivity");
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         finish();
+    }
+
+    private void sleepYo() {
+        try {
+            Thread.sleep(100);
+            if(FacebookSdk.isInitialized())
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            else
+                sleepYo();
+        } catch (InterruptedException ie) {
+            T.showShortDebug(getApplicationContext(), "One second sleep. SplashActivity");
+        }
     }
 }

@@ -4,6 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -15,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +48,7 @@ import com.pericstudio.drawit.utils.T;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +76,7 @@ public class DashboardActivity extends AppCompatActivity
         setContentView(R.layout.activity_dashboard);
         ivProfilePic = (ImageView) findViewById(R.id.fb_profile_pic);
         init();
-        setProfilePic();
+        setNavigationHeaderInfo();
     }
 
     private void init() {
@@ -154,7 +159,7 @@ public class DashboardActivity extends AppCompatActivity
                                             });
 
                                 } else
-                                    Toast.makeText(DashboardActivity.this, "Fatal error occurred. Logout and login again", Toast.LENGTH_LONG);
+                                    T.showLong(DashboardActivity.this, "Fatal error occurred. Logout and login again");
                             }
                         });
                     }
@@ -196,7 +201,7 @@ public class DashboardActivity extends AppCompatActivity
                                 }
                             });
                         } else {
-                            List<CMObject> dummyData = new ArrayList<CMObject>();
+                            List<CMObject> dummyData = new ArrayList<>();
                             mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
                             mRecyclerView.setAdapter(mRecycleAdapter);
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -211,17 +216,23 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
-    private void setProfilePic() {
+    private void setNavigationHeaderInfo() {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         try {
-                            JSONObject picture = object.getJSONObject("picture");
-                            JSONObject baseData = picture.getJSONObject("data");
-                            final String PICTURE_URL = baseData.getString("url");
+//                            JSONObject picture = object.getJSONObject("picture");
+//                            JSONObject baseData = picture.getJSONObject("data");
+//                            final String PICTURE_URL = baseData.getString("url");
+                            String PICTURE_URL = "https://graph.facebook.com/"+object.getString("id")+"/picture?height=500000";
                             T.showLong(getApplicationContext(), PICTURE_URL);
+
+                            new DownloadImageTask((ImageView) findViewById(R.id.fb_profile_pic))
+                                    .execute(PICTURE_URL);
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -305,7 +316,7 @@ public class DashboardActivity extends AppCompatActivity
                 request.executeAsync();
                 break;
             case R.id.nav_gallery:
-                setProfilePic();
+                setNavigationHeaderInfo();
                 break;
             default:
                 T.showLong(getApplicationContext(), "Something bugged out. Submit a bug report at pericappstudio@gmail.com");
@@ -333,6 +344,35 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     public void onRefresh() {
         populateDashboard();
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+//            float aspectRatio = result.getWidth() /
+//                    (float) result.getHeight();
+//            int width = 320;
+//            int height = Math.round(width / aspectRatio);
+            bmImage.setImageBitmap(result);
+        }
     }
 
 }

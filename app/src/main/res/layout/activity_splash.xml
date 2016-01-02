@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="One second splash"
+        android:textColor="#000"
         android:id="@+id/textView3"
         android:layout_gravity="center_horizontal"
         android:layout_centerVertical="true"
