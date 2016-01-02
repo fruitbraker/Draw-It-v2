@@ -13,8 +13,8 @@ import com.pericstudio.drawit.utils.T;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
-    private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
+    private static final String APP_ID = "90aaa080f39d481b9ee84dedf1d53f87";
+    private static final String API_KEY = "f787bfbc752a45219abcac28ca9e9df5";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

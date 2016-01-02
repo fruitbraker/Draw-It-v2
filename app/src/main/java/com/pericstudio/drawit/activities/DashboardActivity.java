@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,12 +31,18 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.adapters.RecyclerViewAdapter;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.objects.Drawing;
 import com.pericstudio.drawit.objects.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,58 +63,15 @@ public class DashboardActivity extends AppCompatActivity
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    private ImageView ivProfilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
+        ivProfilePic = (ImageView) findViewById(R.id.fb_profile_pic);
         init();
-    }
-
-    private void populateDashboard() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_dashboard);
-        final String userID = mSharedPreferences.getString("UserID", null);
-
-        LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
-                        .equal(userID).searchQuery(),
-                new Response.Listener<CMObjectResponse>() {
-                    @Override
-                    public void onResponse(CMObjectResponse response) {
-                        List<CMObject> filler = response.getObjects();
-                        UserObjectIDs user = (UserObjectIDs) filler.get(0);
-
-                        ArrayList<String> drawingIDs = user.getInProgressDrawingIDs();
-
-                        if(drawingIDs.size() > 0) {
-                            LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
-                                @Override
-                                public void onResponse(CMObjectResponse response) {
-                                    noDrawingTv.setVisibility(View.INVISIBLE);
-                                    mRecyclerView.setVisibility(View.VISIBLE);
-                                    mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
-                                    mRecyclerView.setAdapter(mRecycleAdapter);
-                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                    if(swipeRefreshLayout.isRefreshing()) {
-                                        swipeRefreshLayout.setRefreshing(false);
-                                    }
-                                }
-                            });
-                        } else {
-                            List<CMObject> dummyData = new ArrayList<CMObject>();
-                            mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
-                            mRecyclerView.setAdapter(mRecycleAdapter);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                            mRecyclerView.setVisibility(View.VISIBLE);
-                            noDrawingTv.setVisibility(View.VISIBLE);
-                            if(swipeRefreshLayout.isRefreshing()) {
-                                swipeRefreshLayout.setRefreshing(false);
-                            }
-                        }
-
-                    }
-                });
-
+        setProfilePic();
     }
 
     private void init() {
@@ -199,7 +163,75 @@ public class DashboardActivity extends AppCompatActivity
             }
         });
         wasIntent = false;
+
         populateDashboard();
+    }
+
+    private void populateDashboard() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_dashboard);
+        final String userID = mSharedPreferences.getString("UserID", null);
+
+        LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                        .equal(userID).searchQuery(),
+                new Response.Listener<CMObjectResponse>() {
+                    @Override
+                    public void onResponse(CMObjectResponse response) {
+
+                        List<CMObject> filler = response.getObjects();
+                        if(filler.size() > 0) {
+
+                            UserObjectIDs user = (UserObjectIDs) filler.get(0);
+
+                            ArrayList<String> drawingIDs = user.getInProgressDrawingIDs();
+                            LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
+                                @Override
+                                public void onResponse(CMObjectResponse response) {
+                                    noDrawingTv.setVisibility(View.INVISIBLE);
+                                    mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
+                                    mRecyclerView.setAdapter(mRecycleAdapter);
+                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                    if(swipeRefreshLayout.isRefreshing()) {
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                            });
+                        } else {
+                            List<CMObject> dummyData = new ArrayList<CMObject>();
+                            mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
+                            mRecyclerView.setAdapter(mRecycleAdapter);
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                            noDrawingTv.setVisibility(View.VISIBLE);
+                            if(swipeRefreshLayout.isRefreshing()) {
+                                swipeRefreshLayout.setRefreshing(false);
+                            }
+                        }
+
+                    }
+                });
+
+    }
+
+    private void setProfilePic() {
+        GraphRequest request = GraphRequest.newMeRequest(
+                AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        try {
+                            JSONObject picture = object.getJSONObject("picture");
+                            JSONObject baseData = picture.getJSONObject("data");
+                            final String PICTURE_URL = baseData.getString("url");
+                            T.showLong(getApplicationContext(), PICTURE_URL);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "first_name, last_name, id, friends, picture");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     @Override
@@ -253,17 +285,27 @@ public class DashboardActivity extends AppCompatActivity
                 startActivity(new Intent(this, LoginActivity.class));
                 break;
             case R.id.nav_camara:
-                SharedPreferences mSharedPreferences1 = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
-                final String userID = mSharedPreferences1.getString("UserID", null);
-                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID").equal(userID).searchQuery(),
-                        new Response.Listener<CMObjectResponse>() {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
                             @Override
-                            public void onResponse(CMObjectResponse response) {
-                                List<CMObject> fillerList = response.getObjects();
-                                T.showLongDebug(getApplicationContext(), fillerList.size() + "");
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                try {
+                                    String id = object.getString("id");
+                                    Toast.makeText(getApplicationContext(), object.toString(), Toast.LENGTH_LONG).show();
+                                } catch (Exception e) {
 
+                                }
                             }
                         });
+
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "first_name, last_name, id, friends, picture");
+                request.setParameters(parameters);
+                request.executeAsync();
+                break;
+            case R.id.nav_gallery:
+                setProfilePic();
                 break;
             default:
                 T.showLong(getApplicationContext(), "Something bugged out. Submit a bug report at pericappstudio@gmail.com");

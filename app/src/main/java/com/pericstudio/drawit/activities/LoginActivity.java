@@ -141,6 +141,9 @@ public class LoginActivity extends AppCompatActivity {
     public void login(View view) {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
+        if(cbAutolog.isChecked()) {
+            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+        }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {

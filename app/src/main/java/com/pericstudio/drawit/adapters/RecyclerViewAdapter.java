@@ -52,7 +52,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.tv_card_title);
             des = (TextView) itemView.findViewById(R.id.tv_card_des);
-
         }
     }
 

@@ -21,7 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!-- TODO: Add Refreshlayout View thingy -->
     <include layout="@layout/content_dashboard" />
 
 

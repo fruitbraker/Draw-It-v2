@@ -24,6 +24,7 @@
 
 
     <!-- Facebook stuff -->
-    <string name="facebook_app_id">600921753379953</string>
+    <!-- TODO: the following app id is for test app. make sure you change it :) -->
+    <string name="facebook_app_id">601968886608573</string>
 
 </resources>
