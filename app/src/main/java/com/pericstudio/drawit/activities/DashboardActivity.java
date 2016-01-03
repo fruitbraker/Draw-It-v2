@@ -225,12 +225,19 @@ public class DashboardActivity extends AppCompatActivity
                         try {
 //                            JSONObject picture = object.getJSONObject("picture");
 //                            JSONObject baseData = picture.getJSONObject("data");
-//                            final String PICTURE_URL = baseData.getString("url");
-                            String PICTURE_URL = "https://graph.facebook.com/"+object.getString("id")+"/picture?height=500000";
-                            T.showLong(getApplicationContext(), PICTURE_URL);
+//                            final String pictureURL = baseData.getString("url");
+                            String pictureURL = "https://graph.facebook.com/"+object.getString("id")+"/picture?height=500000";
+                            T.showLong(getApplicationContext(), pictureURL);
+                            String name = object.getString("name");
+
+                            TextView nameTv = (TextView) findViewById(R.id.tv_navView_name);
+                            nameTv.setText(name);
+
+                            TextView drawingTv = (TextView) findViewById(R.id.tv_navView_drawing);
+                            drawingTv.setText("0 drawings");
 
                             new DownloadImageTask((ImageView) findViewById(R.id.fb_profile_pic))
-                                    .execute(PICTURE_URL);
+                                    .execute(pictureURL);
 
 
                         } catch (JSONException e) {
@@ -240,7 +247,7 @@ public class DashboardActivity extends AppCompatActivity
                 });
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "first_name, last_name, id, friends, picture");
+        parameters.putString("fields", "name, id");
         request.setParameters(parameters);
         request.executeAsync();
     }

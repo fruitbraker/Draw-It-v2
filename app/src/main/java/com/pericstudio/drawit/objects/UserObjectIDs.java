@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class UserObjectIDs extends LocallySavableCMObject {
 
-    private String ownerID;
+    private String ownerID, facebookID, firstNameUser, lastNameUser;
 
     private ArrayList<String> addedFriendIDs;
     private ArrayList<String> requestedFriendIDs;
@@ -15,18 +15,31 @@ public class UserObjectIDs extends LocallySavableCMObject {
     private ArrayList<String> inProgressDrawingIDs;
     private ArrayList<String> completedDrawingIDs;
 
+    {
+        addedFriendIDs = new ArrayList<>();
+        requestedFriendIDs = new ArrayList<>();
+        pendingFriendIDs = new ArrayList<>();
+        inProgressDrawingIDs = new ArrayList<>();
+        completedDrawingIDs = new ArrayList<>();
+    }
+
     public UserObjectIDs() {
         super();
     }
 
-    public UserObjectIDs(String ownerID) {
+    public UserObjectIDs(String ownerID, String firstNameUser, String lastNameUser) {
         this();
         this.ownerID = ownerID;
-        addedFriendIDs = new ArrayList<String>();
-        requestedFriendIDs = new ArrayList<String>();
-        pendingFriendIDs = new ArrayList<String>();
-        inProgressDrawingIDs = new ArrayList<String>();
-        completedDrawingIDs = new ArrayList<String>();
+        this.firstNameUser = firstNameUser;
+        this.lastNameUser = lastNameUser;
+    }
+
+    public UserObjectIDs(String ownerID, String facebookID, String firstNameUser, String lastNameUser) {
+        this();
+        this.ownerID = ownerID;
+        this.facebookID = facebookID;
+        this.firstNameUser = firstNameUser;
+        this.lastNameUser = lastNameUser;
     }
 
     public String getOwnerID() {
@@ -78,7 +91,7 @@ public class UserObjectIDs extends LocallySavableCMObject {
     }
 
     public void addInProgress(String drawingID) {
-        inProgressDrawingIDs.add(drawingID);
+        inProgressDrawingIDs.add(0, drawingID);
     }
 
     public void removeInProgress(String drawingID) {
@@ -111,7 +124,30 @@ public class UserObjectIDs extends LocallySavableCMObject {
 
     public void addCompletedDrawing(String drawingID) {
         inProgressDrawingIDs.remove(drawingID);
-        completedDrawingIDs.add(drawingID);
+        completedDrawingIDs.add(0, drawingID);
     }
 
+    public String getFacebookID() {
+        return facebookID;
+    }
+
+    public void setFacebookID(String facebookID) {
+        this.facebookID = facebookID;
+    }
+
+    public String getFirstNameUser() {
+        return firstNameUser;
+    }
+
+    public void setFirstNameUser(String name) {
+        this.firstNameUser = name;
+    }
+
+    public String getLastNameUser() {
+        return lastNameUser;
+    }
+
+    public void setLastNameUser(String lastNameUser) {
+        this.lastNameUser = lastNameUser;
+    }
 }
