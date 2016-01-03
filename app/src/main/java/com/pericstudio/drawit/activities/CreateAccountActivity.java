@@ -122,7 +122,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                                                             T.showLong(getApplicationContext(), "Account created successfully");
                                                             final String userID = creationResponse.getObjectId();
 
-                                                            UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                                            //TODO: facebook id, and yadadada
+                                                            UserObjectIDs userObjectIDs = new UserObjectIDs(userID, "", "");
                                                             userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
                                                                 @Override
                                                                 public void onResponse(ObjectModificationResponse objectModificationResponse) {

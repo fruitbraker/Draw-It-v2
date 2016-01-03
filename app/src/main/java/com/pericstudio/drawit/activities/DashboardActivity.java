@@ -76,7 +76,8 @@ public class DashboardActivity extends AppCompatActivity
         setContentView(R.layout.activity_dashboard);
         ivProfilePic = (ImageView) findViewById(R.id.fb_profile_pic);
         init();
-        setNavigationHeaderInfo();
+        if(isFacebookLoggedIn())
+            setNavigationHeaderInfo();
     }
 
     private void init() {
@@ -351,6 +352,10 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     public void onRefresh() {
         populateDashboard();
+    }
+
+    private boolean isFacebookLoggedIn() {
+        return AccessToken.getCurrentAccessToken() != null;
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

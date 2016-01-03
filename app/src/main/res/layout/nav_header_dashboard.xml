@@ -21,10 +21,10 @@
 
 
         <ImageView
-            android:paddingTop="16dp"
+            android:paddingTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_abstract"
+            android:src="@drawable/no_profile_pic"
             android:id="@+id/fb_profile_pic" />
 
     </RelativeLayout>
