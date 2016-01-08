@@ -31,6 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMSessionToken;
+import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
@@ -42,6 +43,7 @@ import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.adapters.RecyclerViewAdapter;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.objects.Drawing;
+import com.pericstudio.drawit.objects.User;
 import com.pericstudio.drawit.objects.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
@@ -68,16 +70,15 @@ public class DashboardActivity extends AppCompatActivity
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private ImageView ivProfilePic;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        ivProfilePic = (ImageView) findViewById(R.id.fb_profile_pic);
         init();
-        if(isFacebookLoggedIn())
-            setNavigationHeaderInfo();
+        if (isFacebookLoggedIn())
+            setNavigationHeaderInfoFB();
+        else
+            setNavigationHeaderInfoCM();
     }
 
     private void init() {
@@ -183,32 +184,35 @@ public class DashboardActivity extends AppCompatActivity
                     @Override
                     public void onResponse(CMObjectResponse response) {
 
-                        List<CMObject> filler = response.getObjects();
-                        if(filler.size() > 0) {
+                        List<CMObject> userObject = response.getObjects();
+                        if (userObject.size() > 0) {
 
-                            UserObjectIDs user = (UserObjectIDs) filler.get(0);
+                            UserObjectIDs user = (UserObjectIDs) userObject.get(0);
 
                             ArrayList<String> drawingIDs = user.getInProgressDrawingIDs();
-                            LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
-                                @Override
-                                public void onResponse(CMObjectResponse response) {
-                                    noDrawingTv.setVisibility(View.INVISIBLE);
-                                    mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
-                                    mRecyclerView.setAdapter(mRecycleAdapter);
-                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                                    if(swipeRefreshLayout.isRefreshing()) {
-                                        swipeRefreshLayout.setRefreshing(false);
+
+                            if (drawingIDs.size() > 0) {
+                                LocallySavableCMObject.loadObjects(getApplicationContext(), drawingIDs, new Response.Listener<CMObjectResponse>() {
+                                    @Override
+                                    public void onResponse(CMObjectResponse response) {
+                                        noDrawingTv.setVisibility(View.INVISIBLE);
+                                        mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
+                                        mRecyclerView.setAdapter(mRecycleAdapter);
+                                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                        if (swipeRefreshLayout.isRefreshing()) {
+                                            swipeRefreshLayout.setRefreshing(false);
+                                        }
                                     }
+                                });
+                            } else {
+                                List<CMObject> dummyData = new ArrayList<>();
+                                mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
+                                mRecyclerView.setAdapter(mRecycleAdapter);
+                                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                                noDrawingTv.setVisibility(View.VISIBLE);
+                                if (swipeRefreshLayout.isRefreshing()) {
+                                    swipeRefreshLayout.setRefreshing(false);
                                 }
-                            });
-                        } else {
-                            List<CMObject> dummyData = new ArrayList<>();
-                            mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
-                            mRecyclerView.setAdapter(mRecycleAdapter);
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                            noDrawingTv.setVisibility(View.VISIBLE);
-                            if(swipeRefreshLayout.isRefreshing()) {
-                                swipeRefreshLayout.setRefreshing(false);
                             }
                         }
 
@@ -217,7 +221,7 @@ public class DashboardActivity extends AppCompatActivity
 
     }
 
-    private void setNavigationHeaderInfo() {
+    private void setNavigationHeaderInfoFB() {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
@@ -227,7 +231,7 @@ public class DashboardActivity extends AppCompatActivity
 //                            JSONObject picture = object.getJSONObject("picture");
 //                            JSONObject baseData = picture.getJSONObject("data");
 //                            final String pictureURL = baseData.getString("url");
-                            String pictureURL = "https://graph.facebook.com/"+object.getString("id")+"/picture?height=500000";
+                            String pictureURL = "https://graph.facebook.com/" + object.getString("id") + "/picture?height=500000";
                             T.showLong(getApplicationContext(), pictureURL);
                             String name = object.getString("name");
 
@@ -237,7 +241,7 @@ public class DashboardActivity extends AppCompatActivity
                             TextView drawingTv = (TextView) findViewById(R.id.tv_navView_drawing);
                             drawingTv.setText("0 drawings");
 
-                            new DownloadImageTask((ImageView) findViewById(R.id.fb_profile_pic))
+                            new DownloadProfilePictureTask((ImageView) findViewById(R.id.fb_profile_pic))
                                     .execute(pictureURL);
 
 
@@ -251,6 +255,39 @@ public class DashboardActivity extends AppCompatActivity
         parameters.putString("fields", "name, id");
         request.setParameters(parameters);
         request.executeAsync();
+    }
+
+    private void setNavigationHeaderInfoCM() {
+        final String userID = mSharedPreferences.getString("UserID", null);
+        if (userID != null) {
+            CMUser.loadAllUserProfiles(this, new Response.Listener<CMObjectResponse>() {
+                @Override
+                public void onResponse(CMObjectResponse objectResponse) {
+                    User user;
+                    for (CMObject obj : objectResponse.getObjects()) {
+                        user = (User) obj; // all objects in this response will be CMUser
+                        if (user.getObjectId().equals(userID)) {
+                            TextView nameTv = (TextView) findViewById(R.id.tv_navView_name);
+                            nameTv.setText(user.getFullName());
+
+                            TextView drawingTv = (TextView) findViewById(R.id.tv_navView_drawing);
+                            drawingTv.setText("0 drawings");
+
+                            break;
+                        }
+
+                    }
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+                }
+            });
+        } else {
+            T.showLong(this, "Application error. Log out and sign in to try again.");
+        }
     }
 
     @Override
@@ -297,7 +334,7 @@ public class DashboardActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
                 editor.putBoolean("AutoLogin", false);
                 editor.putString("SessionToken", null);
-                editor.commit();
+                editor.apply();
                 wasIntent = true;
                 MusicManager.getMusicManager().setContinuePlay(true);
 
@@ -310,10 +347,10 @@ public class DashboardActivity extends AppCompatActivity
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 try {
-                                    String id = object.getString("id");
                                     Toast.makeText(getApplicationContext(), object.toString(), Toast.LENGTH_LONG).show();
                                 } catch (Exception e) {
-
+                                    T.showLongDebug(getApplication(), "Case Nav_camera Dashboard error");
+                                    e.printStackTrace();
                                 }
                             }
                         });
@@ -324,7 +361,7 @@ public class DashboardActivity extends AppCompatActivity
                 request.executeAsync();
                 break;
             case R.id.nav_gallery:
-                setNavigationHeaderInfo();
+                setNavigationHeaderInfoFB();
                 break;
             default:
                 T.showLong(getApplicationContext(), "Something bugged out. Submit a bug report at pericappstudio@gmail.com");
@@ -338,7 +375,7 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if(!wasIntent)
+        if (!wasIntent)
             MusicManager.getMusicManager().pause();
     }
 
@@ -358,10 +395,10 @@ public class DashboardActivity extends AppCompatActivity
         return AccessToken.getCurrentAccessToken() != null;
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+    private class DownloadProfilePictureTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
+        public DownloadProfilePictureTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 

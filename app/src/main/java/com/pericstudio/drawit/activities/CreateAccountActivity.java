@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.android.volley.Response;
-import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
 import com.cloudmine.api.SearchQuery;
@@ -25,18 +24,13 @@ import java.util.List;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
-    // Find this in your developer console
-    private static final String APP_ID = "2ee0288021974701a1f855ee13fb97f3";
-    // Find this in your developer console
-    private static final String API_KEY = "fcb38f9211d74b67a87a72605abd7455";
 
-    private EditText etEmail, etUsername, etPassword, etConfirmPassword;
+    private EditText etEmail, etUsername, etPassword, etConfirmPassword, etFirstName, etLastName;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         setContentView(R.layout.activity_create_account);
         init();
     }
@@ -46,29 +40,39 @@ public class CreateAccountActivity extends AppCompatActivity {
         etUsername = (EditText) findViewById(R.id.etCreateDisplayName);
         etPassword = (EditText) findViewById(R.id.etCreatePassword);
         etConfirmPassword = (EditText) findViewById(R.id.etCreateConfirmPassword);
+        etFirstName = (EditText) findViewById(R.id.etFirstName);
+        etLastName = (EditText) findViewById(R.id.etLastName);
     }
 
     public void createAccountAsync(View view) {
-        boolean clearToCreate = false;
-        String email = etEmail.getText().toString().trim();
-        String username = etUsername.getText().toString().trim();
+        String emailInput = etEmail.getText().toString().trim();
+        String usernameInput = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
+        String firstNameInput = etFirstName.getText().toString().trim();
+        String lastNameInput = etLastName.getText().toString().trim();
 
-        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        String emailOutput = emailInput.substring(0,1).toUpperCase() + emailInput.substring(1);
+        String usernameOutput = usernameInput.substring(0,1).toUpperCase() + usernameInput.substring(1);
+        String firstNameOutput = firstNameInput.substring(0,1).toUpperCase() + firstNameInput.substring(1);
+        String lastNameOutput = lastNameInput.substring(0,1).toUpperCase() + lastNameInput.substring(1);
+
+        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
             T.showLong(this, "Invalid Email");
-        } else if(username.equalsIgnoreCase("") || password.equalsIgnoreCase("") || confirmPassword.equalsIgnoreCase(""))
+        } else if(usernameOutput.equalsIgnoreCase("") || password.equalsIgnoreCase("") || confirmPassword.equalsIgnoreCase("") ||
+                firstNameOutput.equalsIgnoreCase("") || lastNameOutput.equalsIgnoreCase(""))
             T.showLong(this, "One or more fields are missing");
         else if(!password.equalsIgnoreCase(confirmPassword)) {
             T.showLong(this, "Passwords do not match");
-        } else if (password.length() < 5) {
+        } else if(password.length() < 5) {
             T.showLong(this, "Password needs to be at least 5 characters long");
+        } else if(firstNameInput.length() <=1) {
+            T.showShort(this, "First name needs to be more than 1 ");
         } else {
-            clearToCreate = true;
+            new CreateAccountTask().execute(emailOutput, usernameOutput, password, firstNameOutput, lastNameOutput);
         }
 
-        if(clearToCreate)
-            new CreateAccountTask().execute(email, username, password);
+
     }
 
     @Override
@@ -79,7 +83,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private class CreateAccountTask extends AsyncTask<String, Void, Void> {
 
-        String email, username, password;
+        String email, username, password, firstName, lastName;
 
         @Override
         protected void onPreExecute() {
@@ -93,6 +97,8 @@ public class CreateAccountActivity extends AppCompatActivity {
             email = params[0];
             username = params[1];
             password = params[2];
+            firstName = params[3];
+            lastName = params[4];
 
             CMUser.searchUserProfiles(getApplicationContext(), SearchQuery.filter("userEmail").equal(email).searchQuery(),
                     new Response.Listener<CMObjectResponse>() {
@@ -112,18 +118,17 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             public void onResponse(CMObjectResponse cmObjectResponse) {
                                                 List<CMObject> users = cmObjectResponse.getObjects();
 
-                                                if(users.size() > 0) {
+                                                if (users.size() > 0) {
                                                     T.showLong(getApplicationContext(), "Username is already taken");
                                                 } else {
-                                                    User newUser = new User(email, username, password);
+                                                    User newUser = new User(email, username, password, firstName, lastName);
                                                     newUser.create(getApplicationContext(), new Response.Listener<CreationResponse>() {
                                                         @Override
                                                         public void onResponse(CreationResponse creationResponse) {
                                                             T.showLong(getApplicationContext(), "Account created successfully");
                                                             final String userID = creationResponse.getObjectId();
 
-                                                            //TODO: facebook id, and yadadada
-                                                            UserObjectIDs userObjectIDs = new UserObjectIDs(userID, "", "");
+                                                            UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
                                                             userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
                                                                 @Override
                                                                 public void onResponse(ObjectModificationResponse objectModificationResponse) {

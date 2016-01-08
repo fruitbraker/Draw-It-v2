@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.DeviceIdentifier;
 import com.facebook.FacebookSdk;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.music.MusicManager;
@@ -20,6 +21,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        DeviceIdentifier.initialize(getApplicationContext());
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
         MusicManager.getMusicManager();

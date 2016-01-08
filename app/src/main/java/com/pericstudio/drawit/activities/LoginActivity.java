@@ -25,11 +25,11 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.pericstudio.drawit.R;
@@ -50,18 +50,17 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
     private SharedPreferences mSharedPreferences;
-    private boolean wasIntent;
+    private boolean wasIntent, wasCreateActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        boolean isAutoLog;
         FacebookSdk.sdkInitialize(getApplicationContext());
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
-        isAutoLog = mSharedPreferences.getBoolean("AutoLogin", false);
+        wasCreateActivity = false;
 
-        if (isAutoLog)
+        if (mSharedPreferences.getBoolean("AutoLogin", false))
             goToDashboard();
         else
             init();
@@ -114,8 +113,35 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
-                startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                final String userID = loginResult.getAccessToken().getUserId();
+                final SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                                .equal(userID).searchQuery(),
+                        new Response.Listener<CMObjectResponse>() {
+                            @Override
+                            public void onResponse(CMObjectResponse response) {
+                                List<CMObject> filler = response.getObjects();
+                                if (filler.size() > 0) {
+                                    Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+                                    editor.putString("UserID", userID);
+                                    editor.apply();
+                                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                                } else {
+                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                    userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                                        @Override
+                                        public void onResponse(ObjectModificationResponse objectModificationResponse) {
+                                            editor.putString("UserID", userID);
+                                            editor.apply();
+                                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+
             }
 
             @Override
@@ -125,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
+                exception.printStackTrace();
             }
         });
 
@@ -143,8 +169,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
         if(cbAutolog.isChecked()) {
             startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
             T.showLong(this, "One or more of the fields are empty");
@@ -157,6 +182,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void createAccount(View view) {
         wasIntent = true;
+        wasCreateActivity = true;
         startActivity(new Intent(this, CreateAccountActivity.class));
     }
 
@@ -190,22 +216,10 @@ public class LoginActivity extends AppCompatActivity {
                     if (cbAutolog.isChecked()) {
                         editor.putBoolean("AutoLogin", true);
                     }
-                    editor.commit();
+                    editor.apply();
 
-                    LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
-                            .equal(userID).searchQuery(), new Response.Listener<CMObjectResponse>() {
-                        @Override
-                        public void onResponse(CMObjectResponse cmObjectResponse) {
-                            List<CMObject> cmObjectList = cmObjectResponse.getObjects();
-                            UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
-                            ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
-                            dialog.dismiss();
-                            wasIntent = true;
-                            T.showShortDebug(getApplicationContext(), "Drawing");
-                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
 
-                        }
-                    });
 
                 }
             }, new Response.ErrorListener() {
@@ -228,9 +242,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onPause();
         if(!wasIntent)
             MusicManager.getMusicManager().pause();
-        else
+        else if(!wasCreateActivity)
             finish();
-        AppEventsLogger.activateApp(this);
+//        AppEventsLogger.activateApp(this);
     }
 
     @Override
@@ -238,7 +252,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         MusicManager.getMusicManager().resume();
         wasIntent = false;
-        AppEventsLogger.deactivateApp(this);
+        wasCreateActivity = true;
+//        AppEventsLogger.deactivateApp(this);
     }
 
 }

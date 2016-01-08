@@ -4,7 +4,7 @@ import com.cloudmine.api.CMUser;
 
 public class User extends CMUser {
 
-    private String userEmail, userUsername;
+    private String userEmail, userUsername, firstName, lastName;
 
     private byte[] profilePicture;
 
@@ -12,10 +12,12 @@ public class User extends CMUser {
         super();
     }
 
-    public User(String userEmail, String userUsername, String password) {
+    public User(String userEmail, String userUsername, String password, String firstName, String lastName) {
         super(userEmail, userUsername, password);
         this.userEmail = userEmail;
         this.userUsername = userUsername;
+        this.firstName = firstName;
+        this.lastName = lastName;
         profilePicture = null;
     }
 
@@ -43,4 +45,23 @@ public class User extends CMUser {
         profilePicture = newProfilePicuture;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class UserObjectIDs extends LocallySavableCMObject {
 
-    private String ownerID, facebookID, firstNameUser, lastNameUser;
+    private String ownerID;
 
     private ArrayList<String> addedFriendIDs;
     private ArrayList<String> requestedFriendIDs;
@@ -27,19 +27,9 @@ public class UserObjectIDs extends LocallySavableCMObject {
         super();
     }
 
-    public UserObjectIDs(String ownerID, String firstNameUser, String lastNameUser) {
+    public UserObjectIDs(String ownerID) {
         this();
         this.ownerID = ownerID;
-        this.firstNameUser = firstNameUser;
-        this.lastNameUser = lastNameUser;
-    }
-
-    public UserObjectIDs(String ownerID, String facebookID, String firstNameUser, String lastNameUser) {
-        this();
-        this.ownerID = ownerID;
-        this.facebookID = facebookID;
-        this.firstNameUser = firstNameUser;
-        this.lastNameUser = lastNameUser;
     }
 
     public String getOwnerID() {
@@ -127,27 +117,4 @@ public class UserObjectIDs extends LocallySavableCMObject {
         completedDrawingIDs.add(0, drawingID);
     }
 
-    public String getFacebookID() {
-        return facebookID;
-    }
-
-    public void setFacebookID(String facebookID) {
-        this.facebookID = facebookID;
-    }
-
-    public String getFirstNameUser() {
-        return firstNameUser;
-    }
-
-    public void setFirstNameUser(String name) {
-        this.firstNameUser = name;
-    }
-
-    public String getLastNameUser() {
-        return lastNameUser;
-    }
-
-    public void setLastNameUser(String lastNameUser) {
-        this.lastNameUser = lastNameUser;
-    }
 }
