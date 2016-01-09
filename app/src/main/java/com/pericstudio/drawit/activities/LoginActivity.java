@@ -1,5 +1,6 @@
 package com.pericstudio.drawit.activities;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -113,6 +114,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
+                Dialog dialog = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...");
+
                 final String userID = loginResult.getAccessToken().getUserId();
                 final SharedPreferences.Editor editor = mSharedPreferences.edit();
 

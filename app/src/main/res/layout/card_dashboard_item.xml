@@ -19,9 +19,9 @@
             android:layout_height="wrap_content"
             android:text="Title here"
             android:id="@+id/tv_card_title"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_above="@+id/tv_card_des"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:paddingTop="8dp"
@@ -31,17 +31,19 @@
             android:layout_height="wrap_content"
             android:text="Des here"
             android:id="@+id/tv_card_des"
-            android:layout_centerVertical="true"
-            android:layout_alignRight="@+id/tv_card_title"
-            android:layout_alignEnd="@+id/tv_card_title" />
+            android:layout_alignBottom="@+id/bt_card_dashboard"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button4"
+            android:text="Test!"
+            android:id="@+id/bt_card_dashboard"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:onClick="deleteThing"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

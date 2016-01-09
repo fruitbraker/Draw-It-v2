@@ -100,7 +100,7 @@ public class DashboardActivity extends AppCompatActivity
         noDrawingTv.setVisibility(View.INVISIBLE);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.inProgressSwipeRefresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setOnRefreshListener(this);;
 
         String sessionTokenTransport = mSharedPreferences.getString("SessionToken", null);
         if (sessionTokenTransport != null) {
@@ -196,7 +196,7 @@ public class DashboardActivity extends AppCompatActivity
                                     @Override
                                     public void onResponse(CMObjectResponse response) {
                                         noDrawingTv.setVisibility(View.INVISIBLE);
-                                        mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects());
+                                        mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), response.getObjects(), userID);
                                         mRecyclerView.setAdapter(mRecycleAdapter);
                                         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                                         if (swipeRefreshLayout.isRefreshing()) {
@@ -206,7 +206,7 @@ public class DashboardActivity extends AppCompatActivity
                                 });
                             } else {
                                 List<CMObject> dummyData = new ArrayList<>();
-                                mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData);
+                                mRecycleAdapter = new RecyclerViewAdapter(getApplicationContext(), dummyData, userID);
                                 mRecyclerView.setAdapter(mRecycleAdapter);
                                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                                 noDrawingTv.setVisibility(View.VISIBLE);

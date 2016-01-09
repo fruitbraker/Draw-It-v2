@@ -81,7 +81,10 @@ public class UserObjectIDs extends LocallySavableCMObject {
     }
 
     public void addInProgress(String drawingID) {
-        inProgressDrawingIDs.add(0, drawingID);
+        if(inProgressDrawingIDs.size() > 0)
+            inProgressDrawingIDs.add(inProgressDrawingIDs.size() - 1, drawingID);
+        else
+            inProgressDrawingIDs.add(drawingID);
     }
 
     public void removeInProgress(String drawingID) {
