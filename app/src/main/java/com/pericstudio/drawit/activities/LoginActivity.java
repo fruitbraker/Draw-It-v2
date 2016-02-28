@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
                     ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
                     dialog.dismiss();
-                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
                 }
             });
         } else
@@ -129,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
                                     editor.putString("UserID", userID);
                                     editor.apply();
-                                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
                                 } else {
                                     UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
                                     userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                                         public void onResponse(ObjectModificationResponse objectModificationResponse) {
                                             editor.putString("UserID", userID);
                                             editor.apply();
-                                            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                                            startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
                                         }
                                     });
                                 }
@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
         if(cbAutolog.isChecked()) {
-            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+            startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
         }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
@@ -221,7 +221,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     editor.apply();
 
-                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
 
 
                 }
@@ -238,6 +238,11 @@ public class LoginActivity extends AppCompatActivity {
             return null;
         }
 
+    }
+
+    public void goToNewDashboard(View view) {
+        if(cbAutolog.isChecked())
+            startActivity(new Intent(getApplicationContext(),DashboardActivity.class));
     }
 
     @Override

@@ -26,5 +26,11 @@
     <!-- Facebook stuff -->
     <!-- TODO: the following app id is for test app. make sure you change it :) -->
     <string name="facebook_app_id">601968886608573</string>
+    <string name="hello_world">Hello World!</string>
+
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="next">Next</string>
 
 </resources>

@@ -23,14 +23,14 @@ import com.pericstudio.drawit.objects.UserObjectIDs;
 import java.util.Collections;
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
+public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerViewAdapterDrawing.RecyclerViewHolder> {
 
     private LayoutInflater inflater;
     private List<CMObject> data = Collections.emptyList();
     private Context context;
     private String userID;
 
-    public RecyclerViewAdapter(Context context, List<CMObject> data, String userID) {
+    public RecyclerViewAdapterDrawing(Context context, List<CMObject> data, String userID) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.data = data;
@@ -38,14 +38,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public RecyclerViewAdapter.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerViewAdapterDrawing.RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.card_dashboard_item, parent, false);
         RecyclerViewHolder holder = new RecyclerViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapter.RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewAdapterDrawing.RecyclerViewHolder holder, int position) {
         final Drawing current = (Drawing) data.get(position);
         final String itemID = current.getObjectId();
         holder.title.setText(current.getTitle());
@@ -60,18 +60,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                             @Override
                             public void onResponse(CMObjectResponse response) {
                                 List<CMObject> filler = response.getObjects();
-                                if(filler.size() > 0) {
+                                if (filler.size() > 0) {
                                     UserObjectIDs objectIDs = (UserObjectIDs) filler.get(0);
                                     objectIDs.removeInProgress(itemID);
                                     objectIDs.save(context, new Response.Listener<ObjectModificationResponse>() {
                                         @Override
                                         public void onResponse(ObjectModificationResponse modificationResponse) {
-                                            Log.d("RecyclerViewAdapter", "Object removed! (Tho still on server)");
+                                            Log.d("RecyclerAdapterDrawing", "Object removed! (Tho still on server)");
                                         }
                                     }, new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError volleyError) {
-                                            Log.e("RecyclerViewAdapter", "Failed delete", volleyError);
+                                            Log.e("RecyclerAdapterDrawing", "Failed delete", volleyError);
                                         }
                                     });
                                 } else {
@@ -100,9 +100,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             des = (TextView) itemView.findViewById(R.id.tv_card_des);
             button = (Button) itemView.findViewById(R.id.bt_card_dashboard);
         }
-
-
-
     }
-
 }

@@ -25,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
         CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
         MusicManager.getMusicManager();
-        MusicManager.getMusicManager().playMusic("DashboardActivity", getApplicationContext());
+        MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());
         sleepYo();
 
     }

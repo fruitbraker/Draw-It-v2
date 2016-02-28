@@ -16,9 +16,19 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".activities.DashboardActivity"
+            android:name=".activities.DashboardActivityOld"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.DashboardActivity"
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

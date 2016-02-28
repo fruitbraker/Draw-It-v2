@@ -14,4 +14,7 @@
     <dimen name="card_height">340dp</dimen>
 
 
+    <dimen name="nav_drawer_width">280dp</dimen>
+
+
 </resources>
