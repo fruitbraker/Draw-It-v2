@@ -1,3 +1,5 @@
-# Draw-It-
+![Draw It! icon](http://drawit.cloudmineapp.com/assets/ic_launcher.png)
 
-Android application.
+# Draw It!
+
+Version 2.0 of the app! Currently work in progress.
