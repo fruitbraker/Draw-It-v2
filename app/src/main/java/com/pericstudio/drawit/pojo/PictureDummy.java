@@ -1,4 +1,4 @@
-package com.pericstudio.drawit.objects;
+package com.pericstudio.drawit.pojo;
 
 import android.graphics.Bitmap;
 

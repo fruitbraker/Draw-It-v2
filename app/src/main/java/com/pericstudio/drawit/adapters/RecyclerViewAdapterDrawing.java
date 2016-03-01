@@ -17,8 +17,8 @@ import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.R;
-import com.pericstudio.drawit.objects.Drawing;
-import com.pericstudio.drawit.objects.UserObjectIDs;
+import com.pericstudio.drawit.pojo.Drawing;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 
 import java.util.Collections;
 import java.util.List;

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.NavigationDrawerFragment;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivityReallyOld extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private NavigationDrawerFragment mDrawerFragment;

@@ -15,8 +15,8 @@ import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.R;
-import com.pericstudio.drawit.objects.User;
-import com.pericstudio.drawit.objects.UserObjectIDs;
+import com.pericstudio.drawit.pojo.User;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.S;
 import com.pericstudio.drawit.utils.T;
 

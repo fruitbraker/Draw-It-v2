@@ -1,4 +1,4 @@
-package com.pericstudio.drawit.objects;
+package com.pericstudio.drawit.pojo;
 
 import com.cloudmine.api.db.LocallySavableCMObject;
 

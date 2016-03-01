@@ -35,8 +35,8 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.music.MusicManager;
-import com.pericstudio.drawit.objects.User;
-import com.pericstudio.drawit.objects.UserObjectIDs;
+import com.pericstudio.drawit.pojo.User;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
 import java.util.ArrayList;
@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString();
         String password = etPassword.getText().toString();
         if(cbAutolog.isChecked()) {
-            startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
+            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
         }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
@@ -221,7 +221,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     editor.apply();
 
-                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
 
 
                 }
@@ -238,11 +238,6 @@ public class LoginActivity extends AppCompatActivity {
             return null;
         }
 
-    }
-
-    public void goToNewDashboard(View view) {
-        if(cbAutolog.isChecked())
-            startActivity(new Intent(getApplicationContext(),DashboardActivity.class));
     }
 
     @Override
