@@ -28,15 +28,6 @@
         </activity>
 
         <!-- Manual Drawer -->
-        <activity
-            android:name=".activities.DashboardActivityReallyOld"
-            android:theme="@style/AppTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <!-- with Viewpager -->
         <activity

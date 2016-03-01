@@ -24,6 +24,7 @@ import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.TestFragmentOne;
 import com.pericstudio.drawit.fragments.TestFragmentThree;
 import com.pericstudio.drawit.fragments.TestFragmentTwo;
+import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.utils.T;
 
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private ViewPagerAdapter mAdapter;
+
+    private boolean wasIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +190,20 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
             mFragmentList.add(fragment);
             mFragmentTitle.add(title);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(!wasIntent)
+            MusicManager.getMusicManager().pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicManager.getMusicManager().resume();
+        wasIntent = false;
     }
 
 }
