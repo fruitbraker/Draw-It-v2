@@ -27,9 +27,12 @@ import com.pericstudio.drawit.fragments.TestFragmentTwo;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.utils.T;
 
-import java.util.ArrayList;
-
 public class DashboardMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static final int FRAGMENT_WIP = 0;
+    public static final int FRAGMENT_FILLER = 1;
+    public static final int FRAGMENT_FILLER2 = 2;
+
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private ViewPagerAdapter mAdapter;
@@ -89,9 +92,6 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mAdapter.addFragment(TestFragmentOne.newInstance("one"), "one");
-        mAdapter.addFragment(TestFragmentTwo.newInstance("two"), "two");
-        mAdapter.addFragment(TestFragmentThree.newInstance("three"), "three");
 
         mViewPager.setAdapter(mAdapter);
 
@@ -163,32 +163,42 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ArrayList<Fragment> mFragmentList = new ArrayList<>();
-        private ArrayList<String> mFragmentTitle = new ArrayList<>();
+        String[] tabNames = new String[]{"One", "Two", "Three"};
+
+        FragmentManager mFragmentManager;
+
 
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
+            mFragmentManager = fm;
         }
 
 
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            Fragment fragment = null;
+            switch (position) {
+                case FRAGMENT_WIP:
+                    fragment = TestFragmentOne.newInstance("one");
+                    break;
+                case FRAGMENT_FILLER:
+                    fragment = TestFragmentTwo.newInstance("two");
+                    break;
+                case FRAGMENT_FILLER2:
+                    fragment = TestFragmentThree.newInstance("three");
+                    break;
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return tabNames.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitle.get(position);
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitle.add(title);
+            return tabNames[position];
         }
     }
 

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.cloudmine.api.CMApiCredentials;
 import com.cloudmine.api.DeviceIdentifier;
 import com.facebook.FacebookSdk;
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.utils.T;
@@ -14,15 +15,12 @@ import com.pericstudio.drawit.utils.T;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final String APP_ID = "90aaa080f39d481b9ee84dedf1d53f87";
-    private static final String API_KEY = "f787bfbc752a45219abcac28ca9e9df5";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         DeviceIdentifier.initialize(getApplicationContext());
-        CMApiCredentials.initialize(APP_ID, API_KEY, getApplicationContext());
+        CMApiCredentials.initialize(MyApplication.CM_APP_ID, MyApplication.CM_API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
         MusicManager.getMusicManager();
         MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());

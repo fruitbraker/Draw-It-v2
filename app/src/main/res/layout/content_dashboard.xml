@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.DashboardActivityOld"
     tools:showIn="@layout/app_bar_dashboard"
-    android:background="#DDDDDD">
+    android:background="#FFF">
 
 
     <android.support.v4.view.ViewPager

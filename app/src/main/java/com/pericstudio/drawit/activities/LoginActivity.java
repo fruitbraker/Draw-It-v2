@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
                     ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
                     dialog.dismiss();
-                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
+                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
                 }
             });
         } else
@@ -129,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
                                     editor.putString("UserID", userID);
                                     editor.apply();
-                                    startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
+                                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
                                 } else {
                                     UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
                                     userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                                         public void onResponse(ObjectModificationResponse objectModificationResponse) {
                                             editor.putString("UserID", userID);
                                             editor.apply();
-                                            startActivity(new Intent(getApplicationContext(), DashboardActivityOld.class));
+                                            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
                                         }
                                     });
                                 }

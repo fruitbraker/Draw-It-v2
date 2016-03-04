@@ -2,23 +2,18 @@ package com.pericstudio.drawit.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
-import com.cloudmine.api.SearchQuery;
-import com.cloudmine.api.db.LocallySavableCMObject;
-import com.cloudmine.api.rest.response.CMObjectResponse;
-import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.pojo.Drawing;
-import com.pericstudio.drawit.pojo.UserObjectIDs;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +24,8 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
     private List<CMObject> data = Collections.emptyList();
     private Context context;
     private String userID;
+
+    private int lastPosition = -1;
 
     public RecyclerViewAdapterDrawing(Context context, List<CMObject> data, String userID) {
         inflater = LayoutInflater.from(context);
@@ -50,38 +47,53 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         final String itemID = current.getObjectId();
         holder.title.setText(current.getTitle());
         holder.des.setText(current.getDescription());
-        holder.button.setOnClickListener(new View.OnClickListener() {
+//        holder.button.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                LocallySavableCMObject.searchObjects(context, SearchQuery.filter("ownerID")
+//                                .equal(userID).searchQuery(),
+//                        new Response.Listener<CMObjectResponse>() {
+//                            @Override
+//                            public void onResponse(CMObjectResponse response) {
+//                                List<CMObject> filler = response.getObjects();
+//                                if (filler.size() > 0) {
+//                                    UserObjectIDs objectIDs = (UserObjectIDs) filler.get(0);
+//                                    objectIDs.removeInProgress(itemID);
+//                                    objectIDs.save(context, new Response.Listener<ObjectModificationResponse>() {
+//                                        @Override
+//                                        public void onResponse(ObjectModificationResponse modificationResponse) {
+//                                            Log.d("RecyclerAdapterDrawing", "Object removed! (Tho still on server)");
+//                                        }
+//                                    }, new Response.ErrorListener() {
+//                                        @Override
+//                                        public void onErrorResponse(VolleyError volleyError) {
+//                                            Log.e("RecyclerAdapterDrawing", "Failed delete", volleyError);
+//                                        }
+//                                    });
+//                                } else {
+//                                    //TODO: App code
+//                                }
+//                            }
+//                        });
+//            }
+//        });
+        setAnimation(holder.container, position);
+    }
 
-            @Override
-            public void onClick(View v) {
-                LocallySavableCMObject.searchObjects(context, SearchQuery.filter("ownerID")
-                                .equal(userID).searchQuery(),
-                        new Response.Listener<CMObjectResponse>() {
-                            @Override
-                            public void onResponse(CMObjectResponse response) {
-                                List<CMObject> filler = response.getObjects();
-                                if (filler.size() > 0) {
-                                    UserObjectIDs objectIDs = (UserObjectIDs) filler.get(0);
-                                    objectIDs.removeInProgress(itemID);
-                                    objectIDs.save(context, new Response.Listener<ObjectModificationResponse>() {
-                                        @Override
-                                        public void onResponse(ObjectModificationResponse modificationResponse) {
-                                            Log.d("RecyclerAdapterDrawing", "Object removed! (Tho still on server)");
-                                        }
-                                    }, new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError volleyError) {
-                                            Log.e("RecyclerAdapterDrawing", "Failed delete", volleyError);
-                                        }
-                                    });
-                                } else {
-                                    //TODO: App code
-                                }
-                            }
-                        });
-            }
-        });
+    @Override
+    public void onViewDetachedFromWindow(RecyclerViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.clearAnimation();
+    }
 
+    private void setAnimation(View viewToAnimate, int position) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+//        if(position > lastPosition) {
+            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
+//        }
     }
 
     @Override
@@ -89,16 +101,22 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         return data.size();
     }
 
-    class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    static class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, des;
         Button button;
+        RelativeLayout container;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.tv_card_title);
             des = (TextView) itemView.findViewById(R.id.tv_card_des);
             button = (Button) itemView.findViewById(R.id.bt_card_dashboard);
+            container = (RelativeLayout) itemView.findViewById(R.id.dashboard_item);
+        }
+
+        public void clearAnimation() {
+            container.clearAnimation();
         }
     }
 }
