@@ -9,7 +9,6 @@ import com.cloudmine.api.DeviceIdentifier;
 import com.facebook.FacebookSdk;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
-import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.utils.T;
 
 
@@ -22,8 +21,9 @@ public class SplashActivity extends AppCompatActivity {
         DeviceIdentifier.initialize(getApplicationContext());
         CMApiCredentials.initialize(MyApplication.CM_APP_ID, MyApplication.CM_API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
-        MusicManager.getMusicManager();
-        MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());
+        MyApplication.changeMusic(MyApplication.DASHBOARD_MUSIC_TAG);
+//        MusicManager.getMusicManager();
+//        MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());
         sleepYo();
 
     }

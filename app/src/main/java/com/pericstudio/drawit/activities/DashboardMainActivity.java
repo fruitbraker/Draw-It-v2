@@ -20,11 +20,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.TestFragmentOne;
 import com.pericstudio.drawit.fragments.TestFragmentThree;
 import com.pericstudio.drawit.fragments.TestFragmentTwo;
-import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.utils.T;
 
 public class DashboardMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -206,13 +206,13 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     protected void onPause() {
         super.onPause();
         if(!wasIntent)
-            MusicManager.getMusicManager().pause();
+            MyApplication.onPauseMusic();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        MusicManager.getMusicManager().resume();
+        MyApplication.onResumeMusic();
         wasIntent = false;
     }
 

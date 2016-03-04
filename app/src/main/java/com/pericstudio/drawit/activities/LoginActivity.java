@@ -33,8 +33,8 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
-import com.pericstudio.drawit.music.MusicManager;
 import com.pericstudio.drawit.pojo.User;
 import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        T.showLongDebug(getApplicationContext(), MyApplication.CM_API_KEY);
         FacebookSdk.sdkInitialize(getApplicationContext());
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
         wasCreateActivity = false;
@@ -244,8 +245,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(!wasIntent)
-            MusicManager.getMusicManager().pause();
+        if(!wasIntent) {
+            MyApplication.onPauseMusic();
+        }
+
         else if(!wasCreateActivity)
             finish();
 //        AppEventsLogger.activateApp(this);
@@ -254,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        MusicManager.getMusicManager().resume();
+        MyApplication.onResumeMusic();
         wasIntent = false;
         wasCreateActivity = true;
 //        AppEventsLogger.deactivateApp(this);
