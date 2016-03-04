@@ -1,8 +1,23 @@
 package com.pericstudio.drawit.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.cloudmine.api.db.LocallySavableCMObject;
 
-public class Drawing extends LocallySavableCMObject {
+public class Drawing extends LocallySavableCMObject implements Parcelable {
+
+    public static final Parcelable.Creator<Drawing> CREATOR
+            = new Parcelable.Creator<Drawing>() {
+        public Drawing createFromParcel(Parcel in) {
+            return new Drawing(in);
+        }
+
+        public Drawing[] newArray(int size) {
+            return new Drawing[size];
+        }
+    };
+
 
     private String title;
     private String description;
@@ -15,6 +30,11 @@ public class Drawing extends LocallySavableCMObject {
         this();
         this.title = title;
         this.description = description;
+    }
+
+    public Drawing(Parcel parcel) {
+        title = parcel.readString();
+        description = parcel.readString();
     }
 
     public String getTitle() {
@@ -33,4 +53,14 @@ public class Drawing extends LocallySavableCMObject {
         this.description = description;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(description);
+    }
 }

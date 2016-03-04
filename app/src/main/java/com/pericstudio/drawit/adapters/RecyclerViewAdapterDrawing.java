@@ -11,27 +11,32 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cloudmine.api.CMObject;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.pojo.Drawing;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerViewAdapterDrawing.RecyclerViewHolder> {
 
     private LayoutInflater inflater;
-    private List<CMObject> data = Collections.emptyList();
+    private List<Drawing> data = Collections.emptyList();
     private Context context;
     private String userID;
 
     private int lastPosition = -1;
 
-    public RecyclerViewAdapterDrawing(Context context, List<CMObject> data, String userID) {
+    public RecyclerViewAdapterDrawing(Context context, List<Drawing> data, String userID) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.data = data;
         this.userID = userID;
+    }
+
+    public void setData(ArrayList<Drawing> drawings) {
+        data = drawings;
+        notifyDataSetChanged();
     }
 
     @Override

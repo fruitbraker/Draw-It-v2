@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cloudmine.api.CMObject;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.adapters.RecyclerViewAdapterDrawing;
 import com.pericstudio.drawit.pojo.Drawing;
@@ -49,7 +48,7 @@ public class TestFragmentTwo extends Fragment implements SwipeRefreshLayout.OnRe
         mSwipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.refreshSwipeWIP);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRecyclerWIP = (RecyclerView) layout.findViewById(R.id.recyclerWIP);
-        ArrayList<CMObject> drawings = new ArrayList<>();
+        ArrayList<Drawing> drawings = new ArrayList<>();
         drawings.add(new Drawing("Title1-2", "Des1"));
         drawings.add(new Drawing("Title2-2", "Des2"));
         drawings.add(new Drawing("Title3-2", "Des3"));
