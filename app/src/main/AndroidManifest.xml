@@ -33,16 +33,16 @@
             android:value="@string/facebook_app_id" />
 
         <!-- COMMENTED CODE HERE!!! -->
-        <activity
-            android:name=".activities.DashboardActivityOld"
-            android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <!--<activity-->
+            <!--android:name=".activities.DashboardActivityOld"-->
+            <!--android:label="@string/title_activity_dashboard"-->
+            <!--android:theme="@style/AppTheme.NoActionBar" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
 
         <!-- with Viewpager -->
         <activity

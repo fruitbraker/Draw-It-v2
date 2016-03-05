@@ -25,12 +25,6 @@ import com.pericstudio.drawit.utils.T;
 
 public class MyApplication extends Application {
 
-    public final static int DASHBOARD_MUSIC_TAG = R.raw.draw_it_dashboard;
-    public final static int DRAWING_MUSIC_TAG = R.raw.draw_it_drawing;
-
-    public static final String CM_APP_ID = "90aaa080f39d481b9ee84dedf1d53f87";
-    public static final String CM_API_KEY = "7910de1abb7846e0a796641c8372422b";
-
     public static Music mMusic;
     private static MediaPlayer mMediaPlayer;
 
