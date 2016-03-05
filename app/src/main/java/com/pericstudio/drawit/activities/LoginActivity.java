@@ -49,6 +49,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.pericstudio.drawit.APIKeys;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.pojo.User;
@@ -73,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        T.showLongDebug(getApplicationContext(), MyApplication.CM_API_KEY);
+        T.showLongDebug(getApplicationContext(), APIKeys.CM_API_KEY);
         FacebookSdk.sdkInitialize(getApplicationContext());
         mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
         wasCreateActivity = false;

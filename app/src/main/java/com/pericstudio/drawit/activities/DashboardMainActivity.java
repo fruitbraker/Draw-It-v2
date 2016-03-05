@@ -36,6 +36,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.pericstudio.drawit.APIKeys;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.TestFragmentOne;
@@ -66,7 +67,7 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        MyApplication.changeMusic(APIKeys.DRAWING_MUSIC_TAG);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
