@@ -87,4 +87,14 @@
         android:layout_alignRight="@+id/cbAutoLog"
         android:layout_alignEnd="@+id/cbAutoLog" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button4"
+        android:onClick="cancelTest"
+        android:layout_alignTop="@+id/login_button_fb"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
