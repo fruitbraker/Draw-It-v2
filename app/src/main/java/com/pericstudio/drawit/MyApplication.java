@@ -5,6 +5,8 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 
+import com.pericstudio.drawit.utils.T;
+
 public class MyApplication extends Application {
 
     public final static int DASHBOARD_MUSIC_TAG = R.raw.draw_it_dashboard;
@@ -29,7 +31,8 @@ public class MyApplication extends Application {
             mMusic = new Music(musicId);
             mMusic.execute();
         } else {
-            mMusic.cancel(true);
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
             mMusic = new Music(musicId);
             mMusic.execute();
         }
@@ -41,6 +44,10 @@ public class MyApplication extends Application {
 
     public static void onResumeMusic() {
         mMediaPlayer.start();
+    }
+
+    public static void onStopMusic() {
+        T.showLongDebug(MyApplication.context, "" + mMusic.isCancelled());
     }
 
     public static Context getContext() {
@@ -65,15 +72,10 @@ public class MyApplication extends Application {
         protected Void doInBackground(Void... params) {
             mMediaPlayer.setLooping(true);
             mMediaPlayer.start();
+            mMusic.cancel(true);
             return null;
         }
 
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-        }
     }
 
 }

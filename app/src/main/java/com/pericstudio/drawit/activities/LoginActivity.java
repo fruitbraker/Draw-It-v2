@@ -242,6 +242,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void cancelTest(View view) {
+        MyApplication.onStopMusic();
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
