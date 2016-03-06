@@ -7,7 +7,11 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.pericstudio.drawit.utils.L;
+
 public class HideFAB extends FloatingActionButton.Behavior {
+
+    private int negTicks = 0 , posTicks = 0;
 
     public HideFAB(Context context, AttributeSet attributeSet){
         super();
@@ -18,10 +22,23 @@ public class HideFAB extends FloatingActionButton.Behavior {
                                View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
 
-        if(dyConsumed > 0) {
-            child.hide();
-        } else if(dyConsumed < 0) {
+        L.d("negTicks", negTicks + "");
+        L.d("posTIcks", posTicks + "");
+
+        if(!child.isShown() && negTicks > 20) {
             child.show();
+            negTicks = 0;
+            posTicks = 0;
+        } else if(child.isShown() && posTicks > 20) {
+            child.hide();
+            negTicks = 0;
+            posTicks = 0;
+        }
+
+        if(child.isShown() && dyConsumed > 0) {
+            posTicks++;
+        } else if(!child.isShown() && dyConsumed < 0) {
+            negTicks++;
         }
 
     }
