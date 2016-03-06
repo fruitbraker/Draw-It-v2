@@ -4,14 +4,17 @@ import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.utils.L;
 
 public class HideFAB extends FloatingActionButton.Behavior {
 
     private int negTicks = 0 , posTicks = 0;
+    private RecyclerView rv;
 
     public HideFAB(Context context, AttributeSet attributeSet){
         super();
@@ -25,19 +28,20 @@ public class HideFAB extends FloatingActionButton.Behavior {
         L.d("negTicks", negTicks + "");
         L.d("posTIcks", posTicks + "");
 
-        if(!child.isShown() && negTicks > 20) {
+
+        if(!child.isShown() && negTicks > MyApplication.TICK_THRESHOLD) {
             child.show();
             negTicks = 0;
             posTicks = 0;
-        } else if(child.isShown() && posTicks > 20) {
+        } else if(child.isShown() && posTicks > MyApplication.TICK_THRESHOLD) {
             child.hide();
             negTicks = 0;
             posTicks = 0;
         }
 
-        if(child.isShown() && dyConsumed > 0) {
+        if(dyConsumed > 0) {
             posTicks++;
-        } else if(!child.isShown() && dyConsumed < 0) {
+        } else if( dyConsumed < 0) {
             negTicks++;
         }
 
