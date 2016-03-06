@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.adapters.RecyclerViewAdapterDrawing;
+import com.pericstudio.drawit.aesthetics.RecyclerViewDecorator;
 import com.pericstudio.drawit.pojo.Drawing;
 import com.pericstudio.drawit.utils.T;
 
@@ -43,6 +44,7 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
     private TextView tvTest;
     private RecyclerView mRecyclerWIP;
     private RecyclerViewAdapterDrawing mDrawingAdapter;
+    private RecyclerViewDecorator mDecorator;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public TestFragmentOne() {
@@ -68,6 +70,9 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
         mRecyclerWIP.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDrawingAdapter = new RecyclerViewAdapterDrawing(getActivity(), drawings, "");
         mRecyclerWIP.setAdapter(mDrawingAdapter);
+        mDecorator = new RecyclerViewDecorator();
+        mRecyclerWIP.addItemDecoration(mDecorator);
+
         if(savedInstanceState != null) {
             T.showLongDebug(getActivity(), "Saved Instance State");
             drawings = savedInstanceState.getParcelableArrayList(STATE_DRAWINGS_WIP);

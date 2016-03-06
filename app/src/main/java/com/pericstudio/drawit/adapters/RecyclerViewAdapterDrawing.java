@@ -68,6 +68,7 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         final String itemID = current.getObjectId();
         holder.title.setText(current.getTitle());
         holder.des.setText(current.getDescription());
+
 //        holder.button.setOnClickListener(new View.OnClickListener() {
 //
 //            @Override
@@ -102,6 +103,8 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         setAnimation(holder.container, position);
     }
 
+
+
     @Override
     public void onViewDetachedFromWindow(RecyclerViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
@@ -110,11 +113,11 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
 
     private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
-//        if(position > lastPosition) {
+        if(position > lastPosition) {
             Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
-//        }
+        }
     }
 
     @Override
@@ -122,12 +125,11 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         return data.size();
     }
 
-    static class RecyclerViewHolder extends RecyclerView.ViewHolder {
+    class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, des;
         Button button;
         RelativeLayout container;
-
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.tv_card_title);
@@ -140,4 +142,5 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
             container.clearAnimation();
         }
     }
+
 }

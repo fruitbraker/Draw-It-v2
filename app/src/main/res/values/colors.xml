@@ -25,4 +25,8 @@
     <color name="colorIcons">#FFFFFF</color>
     <color name="colorDivider">#B6B6B6</color>
 
+    <color name="evenLayout">#FFFFFF</color>
+    <color name="oddLayout">#D1F6FC</color>
+
+
 </resources>

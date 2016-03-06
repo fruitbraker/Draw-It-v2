@@ -18,6 +18,7 @@ package com.pericstudio.drawit;
 
 import android.app.Application;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 
@@ -76,6 +77,7 @@ public class MyApplication extends Application {
         protected void onPreExecute() {
             super.onPreExecute();
             mMediaPlayer = MediaPlayer.create(getContext(), musicId);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         }
 
         @Override
