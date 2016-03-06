@@ -8,7 +8,7 @@ The API keys you see do not work. Therefore, you can't run this app by just down
 
 Special thanks to CloudMine for their generosity in letting my use their services. Without them, this app would not be possible.
 
-Shout out to Aaron F. and Joey T. for their music. You can find Joey's soundcloud here: https://soundcloud.com/joey-tranvik
+Shout out to Aaron F. and Joey T. for their music. You can find Joey's Soundcloud here: https://soundcloud.com/joey-tranvik Arron's Soundcloud can be found here: https://soundcloud.com/aaronaugust
 
 License
 -------
