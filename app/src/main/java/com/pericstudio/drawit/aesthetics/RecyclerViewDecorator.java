@@ -20,7 +20,7 @@ public class RecyclerViewDecorator extends RecyclerView.ItemDecoration{
             view.setBackgroundColor(Color.rgb(255, 255, 255));
         } else {
             //Light Blue
-            view.setBackgroundColor(Color.rgb(209, 246, 252));
+            view.setBackgroundColor(Color.rgb(240, 255, 255));
         }
 
     }
