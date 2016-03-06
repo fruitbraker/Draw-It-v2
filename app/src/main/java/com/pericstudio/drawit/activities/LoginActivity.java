@@ -32,7 +32,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -42,7 +41,6 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
-import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -133,34 +131,35 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 // App code
                 Dialog dialog = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...");
+                startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
 
-                final String userID = loginResult.getAccessToken().getUserId();
-                final SharedPreferences.Editor editor = mSharedPreferences.edit();
+//                final String userID = loginResult.getAccessToken().getUserId();
+//                final SharedPreferences.Editor editor = mSharedPreferences.edit();
 
-                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
-                                .equal(userID).searchQuery(),
-                        new Response.Listener<CMObjectResponse>() {
-                            @Override
-                            public void onResponse(CMObjectResponse response) {
-                                List<CMObject> filler = response.getObjects();
-                                if (filler.size() > 0) {
-                                    Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
-                                    editor.putString("UserID", userID);
-                                    editor.apply();
-                                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-                                } else {
-                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
-                                    userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
-                                        @Override
-                                        public void onResponse(ObjectModificationResponse objectModificationResponse) {
-                                            editor.putString("UserID", userID);
-                                            editor.apply();
-                                            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-                                        }
-                                    });
-                                }
-                            }
-                        });
+//                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+//                                .equal(userID).searchQuery(),
+//                        new Response.Listener<CMObjectResponse>() {
+//                            @Override
+//                            public void onResponse(CMObjectResponse response) {
+//                                List<CMObject> filler = response.getObjects();
+//                                if (filler.size() > 0) {
+//                                    Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+//                                    editor.putString("UserID", userID);
+//                                    editor.apply();
+//                                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+//                                } else {
+//                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+//                                    userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+//                                        @Override
+//                                        public void onResponse(ObjectModificationResponse objectModificationResponse) {
+//                                            editor.putString("UserID", userID);
+//                                            editor.apply();
+//                                            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+//                                        }
+//                                    });
+//                                }
+//                            }
+//                        });
 
 
             }

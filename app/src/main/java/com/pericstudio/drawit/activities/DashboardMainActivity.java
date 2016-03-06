@@ -17,6 +17,9 @@ package com.pericstudio.drawit.activities;
  */
 
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -30,12 +33,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.pericstudio.drawit.APIKeys;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
@@ -43,6 +51,11 @@ import com.pericstudio.drawit.fragments.TestFragmentOne;
 import com.pericstudio.drawit.fragments.TestFragmentThree;
 import com.pericstudio.drawit.fragments.TestFragmentTwo;
 import com.pericstudio.drawit.utils.T;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
 
 public class DashboardMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -62,6 +75,49 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         setContentView(R.layout.activity_dashboard);
         setUpTab();
         setUpToolbar();
+        if(isFacebookLoggedIn()) {
+            populateDrawer();
+        }
+    }
+
+    private void populateDrawer() {
+        GraphRequest request = GraphRequest.newMeRequest(
+                AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        try {
+//                            JSONObject picture = object.getJSONObject("picture");
+//                            JSONObject baseData = picture.getJSONObject("data");
+//                            final String pictureURL = baseData.getString("url");
+                            String pictureURL = "https://graph.facebook.com/" + object.getString("id") + "/picture?height=500000";
+                            T.showLong(getApplicationContext(), pictureURL);
+                            String name = object.getString("name");
+
+                            TextView nameTv = (TextView) findViewById(R.id.tv_navView_name);
+                            nameTv.setText(name);
+
+                            TextView drawingTv = (TextView) findViewById(R.id.tv_navView_drawing);
+                            drawingTv.setText("0 drawings");
+
+                            new DownloadProfilePictureTask((ImageView) findViewById(R.id.fb_profile_pic))
+                                    .execute(pictureURL);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "name, id");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    private boolean isFacebookLoggedIn() {
+        return AccessToken.getCurrentAccessToken() != null;
     }
 
     private void setUpToolbar() {
@@ -173,10 +229,19 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         return true;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(!wasIntent)
+            MyApplication.onPauseMusic();
+    }
 
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyApplication.onResumeMusic();
+        wasIntent = false;
+    }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -219,18 +284,33 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(!wasIntent)
-            MyApplication.onPauseMusic();
-    }
+    private class DownloadProfilePictureTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MyApplication.onResumeMusic();
-        wasIntent = false;
+        public DownloadProfilePictureTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+//            float aspectRatio = result.getWidth() /
+//                    (float) result.getHeight();
+//            int width = 320;
+//            int height = Math.round(width / aspectRatio);
+            bmImage.setImageBitmap(result);
+        }
     }
 
 }
