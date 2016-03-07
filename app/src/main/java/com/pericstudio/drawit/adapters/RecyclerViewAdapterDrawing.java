@@ -23,12 +23,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.pojo.Drawing;
+import com.pericstudio.drawit.utils.T;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,14 +40,12 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
 
     private LayoutInflater inflater;
     private List<Drawing> data = Collections.emptyList();
-    private Context context;
     private String userID;
 
     private int lastPosition = -1;
 
     public RecyclerViewAdapterDrawing(Context context, List<Drawing> data, String userID) {
         inflater = LayoutInflater.from(context);
-        this.context = context;
         this.data = data;
         this.userID = userID;
     }
@@ -63,16 +63,17 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewAdapterDrawing.RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewAdapterDrawing.RecyclerViewHolder holder, final int position) {
         final Drawing current = (Drawing) data.get(position);
         final String itemID = current.getObjectId();
         holder.title.setText(current.getTitle());
         holder.des.setText(current.getDescription());
 
-//        holder.button.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
+        holder.button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                T.showShortDebug(MyApplication.getContext(), position + "");
 //                LocallySavableCMObject.searchObjects(context, SearchQuery.filter("ownerID")
 //                                .equal(userID).searchQuery(),
 //                        new Response.Listener<CMObjectResponse>() {
@@ -98,8 +99,8 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
 //                                }
 //                            }
 //                        });
-//            }
-//        });
+            }
+        });
         setAnimation(holder.container, position);
     }
 
@@ -114,7 +115,7 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
     private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if(position > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            Animation animation = AnimationUtils.loadAnimation(MyApplication.getContext(), android.R.anim.slide_in_left);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
         }
@@ -128,13 +129,13 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
     class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, des;
-        Button button;
+        ImageButton button;
         RelativeLayout container;
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.tv_card_title);
             des = (TextView) itemView.findViewById(R.id.tv_card_des);
-            button = (Button) itemView.findViewById(R.id.bt_card_dashboard);
+            button = (ImageButton) itemView.findViewById(R.id.bt_card_dashboard);
             container = (RelativeLayout) itemView.findViewById(R.id.dashboard_item);
         }
 
