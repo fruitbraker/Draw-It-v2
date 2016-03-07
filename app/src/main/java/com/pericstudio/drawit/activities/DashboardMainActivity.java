@@ -80,6 +80,10 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         }
     }
 
+    /**
+     * Populates the drawer. Picture of the user's profile picture shows up if available.
+     * Name and the number of drawings show up.
+     */
     private void populateDrawer() {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -116,10 +120,17 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         request.executeAsync();
     }
 
+    /**
+     * Checks if the user is logged in through Facebook.
+     * @return A Boolean whether user is logged in or not.
+     */
     private boolean isFacebookLoggedIn() {
         return AccessToken.getCurrentAccessToken() != null;
     }
 
+    /**
+     * Sets up the toolbar and the FAB.
+     */
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -161,6 +172,9 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         });
     }
 
+    /**
+     * Sets up the TabLayout and the ViewPager.
+     */
     private void setUpTab() {
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -169,7 +183,6 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         mViewPager.setAdapter(mAdapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
-
     }
 
     @Override

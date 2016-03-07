@@ -31,6 +31,10 @@ import com.pericstudio.drawit.utils.T;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static int MAX_RECURSION = 50;
+
+    private int counter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +45,8 @@ public class SplashActivity extends AppCompatActivity {
         MyApplication.changeMusic(APIKeys.DASHBOARD_MUSIC_TAG);
 //        MusicManager.getMusicManager();
 //        MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());
+        counter = 0;
         sleepYo();
-
     }
 
     @Override
@@ -51,13 +55,21 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Recursively sleeps until the FacebookSDK has been successfuly initialized. This to prevent
+     * errors whenever the FacebookSDK fails to initialize in time.
+     */
     private void sleepYo() {
         try {
             Thread.sleep(100);
-            if(FacebookSdk.isInitialized())
+            if(FacebookSdk.isInitialized()) {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-            else
+            } else if(counter < MAX_RECURSION) {
+                counter++;
                 sleepYo();
+            } else {
+                T.showLong(MyApplication.getContext(), "FacebookSDK failed to initialize. Submit a bug report");
+            }
         } catch (InterruptedException ie) {
             T.showShortDebug(getApplicationContext(), "One second sleep. SplashActivity");
         }

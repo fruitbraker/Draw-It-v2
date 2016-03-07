@@ -27,6 +27,7 @@ import com.pericstudio.drawit.utils.T;
 public class MyApplication extends Application {
 
     public static final int TICK_THRESHOLD = 2;
+    public static String userID = "";
 
     public static Music mMusic;
     private static MediaPlayer mMediaPlayer;

@@ -83,6 +83,9 @@ public class LoginActivity extends AppCompatActivity {
             init();
     }
 
+    /**
+     * The method used when the user is previously logged in.
+     */
     private void goToDashboard() {
         wasIntent = true;
         final ProgressDialog dialog;
@@ -107,6 +110,9 @@ public class LoginActivity extends AppCompatActivity {
         dialog.dismiss();
     }
 
+    /**
+     * Initializes everything. This is so that it doesn't clutter up the onCreate method.
+     */
     private void init() {
         etEmail = (EditText) findViewById(R.id.etLoginEmail);
         etPassword = (EditText) findViewById(R.id.etLoginPassword);

@@ -50,6 +50,10 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         this.userID = userID;
     }
 
+    /**
+     * Sets the data for the RecyclerView.
+     * @param drawings The used to populate the RecyclerView.
+     */
     public void setData(ArrayList<Drawing> drawings) {
         data = drawings;
         notifyDataSetChanged();
@@ -112,6 +116,11 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
         holder.clearAnimation();
     }
 
+    /**
+     * Animates each RecyclerView layouts.
+     * @param viewToAnimate The particular layout to animate.
+     * @param position The position of the layout.
+     */
     private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if(position > lastPosition) {
