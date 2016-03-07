@@ -4,9 +4,9 @@
 
 Version 2.0 of the app! Currently work in progress.
 
-The API keys you see do not work. Therefore, you can't run this app by just downloading this here. Feel free to download this app from the Play Store once this current version is finished. 
+The API keys you see do not work. Therefore, you can't run this app by just downloading this here. Feel free to download this app from the Play Store once this current version is ready for release. 
 
-Special thanks to CloudMine for their generosity in letting my use their services. Without them, this app would not be possible.
+Special thanks to CloudMine for their generosity to let me use their services. Without them and their support, this app would not be possible. Feel free to check them out here: http://cloudmineinc.com/ 
 
 Shout out to Aaron F. and Joey T. for their music. You can find Joey's Soundcloud here: https://soundcloud.com/joey-tranvik Arron's Soundcloud can be found here: https://soundcloud.com/aaronaugust
 
@@ -26,3 +26,6 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+
+All rights reserve to CloudMine to anything associated to them and the library they provided. 
