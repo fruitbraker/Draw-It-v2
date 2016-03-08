@@ -273,9 +273,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onPause();
         if(!wasIntent) {
             MyApplication.onPauseMusic();
-        }
-
-        else if(!wasCreateActivity)
+        } else if(!wasCreateActivity)
             finish();
 //        AppEventsLogger.activateApp(this);
     }

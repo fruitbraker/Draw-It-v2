@@ -68,27 +68,25 @@ public class CreateAccountActivity extends AppCompatActivity {
         String firstNameInput = etFirstName.getText().toString().trim();
         String lastNameInput = etLastName.getText().toString().trim();
 
-        String emailOutput = emailInput.substring(0,1).toUpperCase() + emailInput.substring(1);
-        String usernameOutput = usernameInput.substring(0,1).toUpperCase() + usernameInput.substring(1);
-        String firstNameOutput = firstNameInput.substring(0,1).toUpperCase() + firstNameInput.substring(1);
-        String lastNameOutput = lastNameInput.substring(0,1).toUpperCase() + lastNameInput.substring(1);
-
-        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
-            T.showLong(this, "Invalid Email");
-        } else if(usernameOutput.equalsIgnoreCase("") || password.equalsIgnoreCase("") || confirmPassword.equalsIgnoreCase("") ||
-                firstNameOutput.equalsIgnoreCase("") || lastNameOutput.equalsIgnoreCase(""))
+        if(emailInput.equalsIgnoreCase("") || usernameInput.equalsIgnoreCase("") || password.equalsIgnoreCase("")
+                || confirmPassword.equalsIgnoreCase("") || firstNameInput.equalsIgnoreCase("")
+                || lastNameInput.equalsIgnoreCase("")) {
             T.showLong(this, "One or more fields are missing");
-        else if(!password.equalsIgnoreCase(confirmPassword)) {
+        } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
+            T.showLong(this, "Invalid Email");
+        } else if(!password.equalsIgnoreCase(confirmPassword)) {
             T.showLong(this, "Passwords do not match");
         } else if(password.length() < 5) {
             T.showLong(this, "Password needs to be at least 5 characters long");
-        } else if(firstNameInput.length() <=1) {
-            T.showShort(this, "First name needs to be more than 1 ");
+        } else if(firstNameInput.length() <= 1) {
+            T.showShort(this, "First name needs to be more than 1 character");
         } else {
+            String emailOutput = emailInput.substring(0, 1).toUpperCase() + emailInput.substring(1);
+            String usernameOutput = usernameInput.substring(0, 1).toUpperCase() + usernameInput.substring(1);
+            String firstNameOutput = firstNameInput.substring(0, 1).toUpperCase() + firstNameInput.substring(1);
+            String lastNameOutput = lastNameInput.substring(0, 1).toUpperCase() + lastNameInput.substring(1);
             new CreateAccountTask().execute(emailOutput, usernameOutput, password, firstNameOutput, lastNameOutput);
         }
-
-
     }
 
     @Override
