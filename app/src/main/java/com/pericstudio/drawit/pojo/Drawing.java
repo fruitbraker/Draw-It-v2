@@ -23,6 +23,8 @@ import com.cloudmine.api.db.LocallySavableCMObject;
 
 public class Drawing extends LocallySavableCMObject implements Parcelable {
 
+    public static final String CLASS_NAME = "Drawing";
+
     public static final Parcelable.Creator<Drawing> CREATOR
             = new Parcelable.Creator<Drawing>() {
         public Drawing createFromParcel(Parcel in) {
@@ -78,5 +80,10 @@ public class Drawing extends LocallySavableCMObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(description);
+    }
+
+    @Override
+    public String getClassName() {
+        return CLASS_NAME;
     }
 }

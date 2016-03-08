@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 public class UserObjectIDs extends LocallySavableCMObject {
 
+    public static final String CLASS_NAME = "UserObjectIDs";
+
     private String ownerID;
 
     private ArrayList<String> addedFriendIDs;
@@ -134,6 +136,11 @@ public class UserObjectIDs extends LocallySavableCMObject {
     public void addCompletedDrawing(String drawingID) {
         inProgressDrawingIDs.remove(drawingID);
         completedDrawingIDs.add(0, drawingID);
+    }
+
+    @Override
+    public String getClassName() {
+        return CLASS_NAME;
     }
 
 }

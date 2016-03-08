@@ -22,17 +22,25 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 
+import com.cloudmine.api.persistance.ClassNameRegistry;
+import com.pericstudio.drawit.pojo.Drawing;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
 public class MyApplication extends Application {
 
-    public static final int TICK_THRESHOLD = 2;
+    public static final int TICK_THRESHOLD = 5;
     public static String userID = "";
 
     public static Music mMusic;
     private static MediaPlayer mMediaPlayer;
 
     private static Context context;
+
+    static {
+        ClassNameRegistry.register(Drawing.CLASS_NAME, Drawing.class);
+        ClassNameRegistry.register(UserObjectIDs.CLASS_NAME, UserObjectIDs.class);
+    }
 
     @Override
     public void onCreate() {
@@ -68,6 +76,10 @@ public class MyApplication extends Application {
         return MyApplication.context;
     }
 
+    public static void setUserID(String id) {
+        userID = id;
+    }
+
     private static class Music extends AsyncTask<Void, Void, Void> {
 
         int musicId;
@@ -94,3 +106,5 @@ public class MyApplication extends Application {
     }
 
 }
+
+
