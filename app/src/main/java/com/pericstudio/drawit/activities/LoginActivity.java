@@ -32,6 +32,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -41,10 +42,10 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.LoginResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.pericstudio.drawit.APIKeys;
@@ -54,7 +55,6 @@ import com.pericstudio.drawit.pojo.User;
 import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,48 +66,17 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
     private SharedPreferences mSharedPreferences;
-    private boolean wasIntent, wasCreateActivity;
+    private boolean wasCreateActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyApplication.wasIntent = false;
         setContentView(R.layout.activity_login);
         T.showLongDebug(getApplicationContext(), APIKeys.CM_API_KEY);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        mSharedPreferences = getSharedPreferences("DrawIt", Context.MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(MyApplication.SHAREDPREF_TAG, Context.MODE_PRIVATE);
         wasCreateActivity = false;
-
-        if (mSharedPreferences.getBoolean("AutoLogin", false))
-            goToDashboard();
-        else
-            init();
-    }
-
-    /**
-     * The method used when the user is previously logged in.
-     */
-    private void goToDashboard() {
-        wasIntent = true;
-        final ProgressDialog dialog;
-        dialog = ProgressDialog.show(this, "Logging in", "Please wait...");
-
-        final String userID = mSharedPreferences.getString("UserID", null);
-
-        if(userID != null) {
-            LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
-                    .equal(userID).searchQuery(), new Response.Listener<CMObjectResponse>() {
-                @Override
-                public void onResponse(CMObjectResponse cmObjectResponse) {
-                    List<CMObject> cmObjectList = cmObjectResponse.getObjects();
-                    UserObjectIDs userObjectIDs = (UserObjectIDs) cmObjectList.get(0);
-                    ArrayList<String> drawings = userObjectIDs.getInProgressDrawingIDs();
-                    dialog.dismiss();
-                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-                }
-            });
-        } else
-            T.showLong(this, "Login failed. Please login again.");
-        dialog.dismiss();
+        init();
     }
 
     /**
@@ -136,38 +105,42 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Dialog dialog = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...");
-                startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                final Dialog dialog = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...");
+                dialog.show();
 
-//                final String userID = loginResult.getAccessToken().getUserId();
-//                final SharedPreferences.Editor editor = mSharedPreferences.edit();
+                final String userID = loginResult.getAccessToken().getUserId();
+                final SharedPreferences.Editor editor = mSharedPreferences.edit();
 
-//                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
-//                                .equal(userID).searchQuery(),
-//                        new Response.Listener<CMObjectResponse>() {
-//                            @Override
-//                            public void onResponse(CMObjectResponse response) {
-//                                List<CMObject> filler = response.getObjects();
-//                                if (filler.size() > 0) {
-//                                    Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
-//                                    editor.putString("UserID", userID);
-//                                    editor.apply();
-//                                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-//                                } else {
-//                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
-//                                    userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
-//                                        @Override
-//                                        public void onResponse(ObjectModificationResponse objectModificationResponse) {
-//                                            editor.putString("UserID", userID);
-//                                            editor.apply();
-//                                            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-//                                        }
-//                                    });
-//                                }
-//                            }
-//                        });
-
-
+                //Checks if the user has logged in through Facebook already. If not, userID is created
+                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                                .equal(userID).searchQuery(),
+                        new Response.Listener<CMObjectResponse>() {
+                            @Override
+                            public void onResponse(CMObjectResponse response) {
+                                List<CMObject> filler = response.getObjects();
+                                if (filler.size() > 0) {
+                                    dialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+                                    MyApplication.setUserID(userID);
+                                    editor.putString(MyApplication.SHAREDPREF_USERID, userID);
+                                    editor.apply();
+                                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                                } else {
+                                    dialog.dismiss();
+                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                    userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                                        @Override
+                                        public void onResponse(ObjectModificationResponse objectModificationResponse) {
+                                            MyApplication.setUserID(userID);
+                                            editor.putString(MyApplication.SHAREDPREF_USERID, userID);
+                                            editor.apply();
+                                            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                dialog.dismiss();
             }
 
             @Override
@@ -180,8 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                 exception.printStackTrace();
             }
         });
-
-        wasIntent = false;
+        MyApplication.wasIntent = false;
     }
 
     @Override
@@ -190,13 +162,18 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Login method
+     * @param view The given parent view from the button. Usually not used.
+     */
     public void login(View view) {
-        String email = etEmail.getText().toString();
-        String password = etPassword.getText().toString();
-        if(cbAutolog.isChecked()) {
-            wasIntent = true;
-            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-        }else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+//        if(cbAutolog.isChecked()) {
+//            wasIntent = true;
+//            startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+//        }else
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             T.showLong(this, "Invalid email");
         } else if (email.equalsIgnoreCase("") || password.equalsIgnoreCase("")) {
             T.showLong(this, "One or more of the fields are empty");
@@ -207,8 +184,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Create account method.
+     * @param view The given parent view from the button.
+     */
     public void createAccount(View view) {
-        wasIntent = true;
+        MyApplication.wasIntent= true;
         wasCreateActivity = true;
         startActivity(new Intent(this, CreateAccountActivity.class));
     }
@@ -237,17 +218,12 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(LoginResponse loginResponse) {
                     final String userID = loginResponse.getUserObject(User.class).getObjectId();
 
-                    editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
-                    editor.putString("UserID", userID);
+//                    editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
+                    editor.putString(MyApplication.SHAREDPREF_USERID, userID);
 
-                    if (cbAutolog.isChecked()) {
-                        editor.putBoolean("AutoLogin", true);
-                    }
                     editor.apply();
-
+                    MyApplication.setUserID(userID);
                     startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
-
-
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -264,14 +240,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void cancelTest(View view) {
-        MyApplication.onStopMusic();
-    }
-
     @Override
     protected void onPause() {
         super.onPause();
-        if(!wasIntent) {
+        if(!MyApplication.wasIntent) {
             MyApplication.onPauseMusic();
         } else if(!wasCreateActivity)
             finish();
@@ -282,7 +254,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         MyApplication.onResumeMusic();
-        wasIntent = false;
+        MyApplication.wasIntent = false;
         wasCreateActivity = true;
 //        AppEventsLogger.deactivateApp(this);
     }

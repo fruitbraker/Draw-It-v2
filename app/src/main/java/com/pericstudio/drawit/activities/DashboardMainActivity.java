@@ -17,6 +17,9 @@ package com.pericstudio.drawit.activities;
  */
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -41,15 +44,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.cloudmine.api.CMObject;
+import com.cloudmine.api.CMUser;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.pericstudio.drawit.APIKeys;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.TestFragmentOne;
 import com.pericstudio.drawit.fragments.TestFragmentThree;
 import com.pericstudio.drawit.fragments.TestFragmentTwo;
+import com.pericstudio.drawit.pojo.User;
 import com.pericstudio.drawit.utils.T;
 
 import org.json.JSONException;
@@ -67,33 +75,62 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     private TabLayout mTabLayout;
     private ViewPagerAdapter mAdapter;
 
-    private boolean wasIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyApplication.wasIntent = false;
         setContentView(R.layout.activity_dashboard);
         setUpTab();
         setUpToolbar();
         if(isFacebookLoggedIn()) {
-            populateDrawer();
+            populateDrawerFB();
+        } else {
+            populatDrawerCM();
         }
     }
+
+    private void populatDrawerCM() {
+        final String userID = MyApplication.userID;
+        if (userID != null) {
+            CMUser.loadAllUserProfiles(this, new Response.Listener<CMObjectResponse>() {
+                @Override
+                public void onResponse(CMObjectResponse objectResponse) {
+                    User user;
+                    for (CMObject obj : objectResponse.getObjects()) {
+                        user = (User) obj; // all objects in this response will be CMUser
+                        if (user.getObjectId().equals(userID)) {
+                            TextView nameTv = (TextView) findViewById(R.id.tv_navView_name);
+                            nameTv.setText(user.getFullName());
+
+                            TextView drawingTv = (TextView) findViewById(R.id.tv_navView_drawing);
+                            drawingTv.setText("0 drawings");
+
+                            break;
+                        }
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                }
+            });
+        } else {
+            T.showLong(this, "Application error. Log out and sign in to try again.");
+        }
+    }
+
 
     /**
      * Populates the drawer. Picture of the user's profile picture shows up if available.
      * Name and the number of drawings show up.
      */
-    private void populateDrawer() {
+    private void populateDrawerFB() {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         try {
-//                            JSONObject picture = object.getJSONObject("picture");
-//                            JSONObject baseData = picture.getJSONObject("data");
-//                            final String pictureURL = baseData.getString("url");
                             String pictureURL = "https://graph.facebook.com/" + object.getString("id") + "/picture?height=500000";
                             T.showLong(getApplicationContext(), pictureURL);
                             String name = object.getString("name");
@@ -106,7 +143,6 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
 
                             new DownloadProfilePictureTask((ImageView) findViewById(R.id.fb_profile_pic))
                                     .execute(pictureURL);
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -134,7 +170,6 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     private void setUpToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        MyApplication.changeMusic(APIKeys.DRAWING_MUSIC_TAG);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -225,7 +260,12 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         //TODO swtich statements of drawer items with ids and stuff
         switch (item.getItemId()) {
             case R.id.nav_logout:
-                T.showShort(getApplicationContext(), "1");
+                SharedPreferences mSharedPreferences = getSharedPreferences(MyApplication.SHAREDPREF_TAG, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                editor.putString(MyApplication.SHAREDPREF_USERID, "");
+                editor.apply();
+                MyApplication.wasIntent = true;
+                startActivity(new Intent(MyApplication.getContext(), LoginActivity.class));
                 break;
             case R.id.nav_camara:
                 T.showShort(getApplicationContext(), "2");
@@ -245,15 +285,19 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     @Override
     protected void onPause() {
         super.onPause();
-        if(!wasIntent)
+        if(!MyApplication.wasIntent) {
             MyApplication.onPauseMusic();
+        } else {
+            MyApplication.wasIntent = false;
+            finish();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         MyApplication.onResumeMusic();
-        wasIntent = false;
+        MyApplication.wasIntent = false;
     }
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -262,12 +306,10 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
 
         FragmentManager mFragmentManager;
 
-
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
             mFragmentManager = fm;
         }
-
 
         @Override
         public Fragment getItem(int position) {

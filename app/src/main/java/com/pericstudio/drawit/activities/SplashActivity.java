@@ -16,7 +16,9 @@ package com.pericstudio.drawit.activities;
  * limitations under the License.
  */
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -31,7 +33,8 @@ import com.pericstudio.drawit.utils.T;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static int MAX_RECURSION = 50;
+    //Maximum of 20 seconds
+    private static final int MAX_RECURSION = 200;
 
     private int counter;
 
@@ -43,8 +46,6 @@ public class SplashActivity extends AppCompatActivity {
         CMApiCredentials.initialize(APIKeys.CM_APP_ID, APIKeys.CM_API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
         MyApplication.changeMusic(APIKeys.DASHBOARD_MUSIC_TAG);
-//        MusicManager.getMusicManager();
-//        MusicManager.getMusicManager().playMusic("DashboardActivityOld", getApplicationContext());
         counter = 0;
         sleepYo();
     }
@@ -63,7 +64,14 @@ public class SplashActivity extends AppCompatActivity {
         try {
             Thread.sleep(100);
             if(FacebookSdk.isInitialized()) {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                SharedPreferences mSharedPreferences = getSharedPreferences(MyApplication.SHAREDPREF_TAG, Context.MODE_PRIVATE);
+                String userID = mSharedPreferences.getString(MyApplication.SHAREDPREF_USERID, null);
+                if(!userID.equalsIgnoreCase("") || userID == null) {
+                    MyApplication.setUserID(userID);
+                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                } else {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                }
             } else if(counter < MAX_RECURSION) {
                 counter++;
                 sleepYo();

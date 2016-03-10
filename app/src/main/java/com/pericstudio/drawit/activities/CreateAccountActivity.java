@@ -30,6 +30,7 @@ import com.cloudmine.api.SearchQuery;
 import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.cloudmine.api.rest.response.CreationResponse;
 import com.cloudmine.api.rest.response.ObjectModificationResponse;
+import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.pojo.User;
 import com.pericstudio.drawit.pojo.UserObjectIDs;
@@ -92,7 +93,16 @@ public class CreateAccountActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        finish();
+        if(MyApplication.wasIntent)
+            finish();
+        else
+            MyApplication.onPauseMusic();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyApplication.onResumeMusic();
     }
 
     private class CreateAccountTask extends AsyncTask<String, Void, Void> {

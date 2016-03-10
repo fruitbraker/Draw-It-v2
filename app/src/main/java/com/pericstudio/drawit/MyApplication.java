@@ -30,7 +30,11 @@ import com.pericstudio.drawit.utils.T;
 public class MyApplication extends Application {
 
     public static final int TICK_THRESHOLD = 5;
+    public static final String SHAREDPREF_TAG = "DrawIt";
+    public static final String SHAREDPREF_USERID = "UserID";
+
     public static String userID = "";
+    public static boolean wasIntent = false;
 
     public static Music mMusic;
     private static MediaPlayer mMediaPlayer;
