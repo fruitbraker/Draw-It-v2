@@ -74,7 +74,7 @@ public class TestFragmentTwo extends Fragment implements SwipeRefreshLayout.OnRe
         drawings.add(new Drawing("Title2-2", "Des2"));
         drawings.add(new Drawing("Title3-2", "Des3"));
 
-        mDrawingAdapter = new RecyclerViewAdapterDrawing(getActivity(), drawings, "");
+        mDrawingAdapter = new RecyclerViewAdapterDrawing(getActivity(), drawings);
         mRecyclerWIP.setAdapter(mDrawingAdapter);
         mRecyclerWIP.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;

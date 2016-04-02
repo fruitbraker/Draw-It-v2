@@ -36,8 +36,10 @@ public class MyApplication extends Application {
     public static String userID = "";
     public static boolean wasIntent = false;
 
-    public static Music mMusic;
+    private static Music mMusic;
     private static MediaPlayer mMediaPlayer;
+
+    private static UserObjectIDs userData;
 
     private static Context context;
 
@@ -62,6 +64,14 @@ public class MyApplication extends Application {
             mMusic = new Music(musicId);
             mMusic.execute();
         }
+    }
+
+    public static void setUserDataObject(UserObjectIDs obj) {
+        userData = obj;
+    }
+
+    public static UserObjectIDs getUserData() {
+        return userData;
     }
 
     public static void onPauseMusic() {

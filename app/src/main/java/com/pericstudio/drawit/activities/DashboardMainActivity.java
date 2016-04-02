@@ -199,7 +199,10 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        T.showLong(getApplicationContext(), "MUAHAHAHAAHA");
+                        final String tvNameContent = tvName.getText().toString().trim();
+                        final String tvDesContent = tvDes.getText().toString().trim();
+
+
                     }
                 });
                 testDialog.show();

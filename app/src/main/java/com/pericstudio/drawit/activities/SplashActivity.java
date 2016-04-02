@@ -21,14 +21,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.cloudmine.api.CMApiCredentials;
+import com.cloudmine.api.CMObject;
 import com.cloudmine.api.DeviceIdentifier;
+import com.cloudmine.api.SearchQuery;
+import com.cloudmine.api.db.LocallySavableCMObject;
+import com.cloudmine.api.rest.response.CMObjectResponse;
 import com.facebook.FacebookSdk;
 import com.pericstudio.drawit.APIKeys;
 import com.pericstudio.drawit.MyApplication;
 import com.pericstudio.drawit.R;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
+
+import java.util.List;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -37,6 +46,7 @@ public class SplashActivity extends AppCompatActivity {
     private static final int MAX_RECURSION = 200;
 
     private int counter;
+    private boolean isFBInitializing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,7 @@ public class SplashActivity extends AppCompatActivity {
         DeviceIdentifier.initialize(getApplicationContext());
         CMApiCredentials.initialize(APIKeys.CM_APP_ID, APIKeys.CM_API_KEY, getApplicationContext());
         FacebookSdk.sdkInitialize(getApplicationContext());
+        isFBInitializing = true;
         MyApplication.changeMusic(APIKeys.DASHBOARD_MUSIC_TAG);
         counter = 0;
         sleepYo();
@@ -63,12 +74,30 @@ public class SplashActivity extends AppCompatActivity {
     private void sleepYo() {
         try {
             Thread.sleep(100);
-            if(FacebookSdk.isInitialized()) {
+            if(FacebookSdk.isInitialized() && isFBInitializing) {
                 SharedPreferences mSharedPreferences = getSharedPreferences(MyApplication.SHAREDPREF_TAG, Context.MODE_PRIVATE);
-                String userID = mSharedPreferences.getString(MyApplication.SHAREDPREF_USERID, null);
-                if(!userID.equalsIgnoreCase("") || userID == null) {
+                final String userID = mSharedPreferences.getString(MyApplication.SHAREDPREF_USERID, null);
+                if(!userID.equalsIgnoreCase("") || !(userID == null)) {
                     MyApplication.setUserID(userID);
-                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+
+                    LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                                    .equal(userID).searchQuery(),
+                            new Response.Listener<CMObjectResponse>() {
+                                @Override
+                                public void onResponse(CMObjectResponse response) {
+                                    List<CMObject> filler = response.getObjects();
+
+                                    if (filler.size() > 0) {
+                                        Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+                                        MyApplication.setUserID(userID);
+                                        MyApplication.setUserDataObject((UserObjectIDs) filler.get(0));
+                                        startActivity(new Intent(MyApplication.getContext(), DashboardMainActivity.class));
+                                    } else {
+                                        startActivity(new Intent(MyApplication.getContext(), LoginActivity.class));
+                                    }
+                                }
+                            });
+
                 } else {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 }

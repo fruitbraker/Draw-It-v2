@@ -117,23 +117,25 @@ public class LoginActivity extends AppCompatActivity {
                         new Response.Listener<CMObjectResponse>() {
                             @Override
                             public void onResponse(CMObjectResponse response) {
-                                List<CMObject> filler = response.getObjects();
+                                final List<CMObject> filler = response.getObjects();
                                 if (filler.size() > 0) {
                                     dialog.dismiss();
                                     Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
                                     MyApplication.setUserID(userID);
                                     editor.putString(MyApplication.SHAREDPREF_USERID, userID);
                                     editor.apply();
+                                    MyApplication.setUserDataObject((UserObjectIDs) filler.get(0));
                                     startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
                                 } else {
                                     dialog.dismiss();
-                                    UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                    final UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
                                     userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
                                         @Override
                                         public void onResponse(ObjectModificationResponse objectModificationResponse) {
                                             MyApplication.setUserID(userID);
                                             editor.putString(MyApplication.SHAREDPREF_USERID, userID);
                                             editor.apply();
+                                            MyApplication.setUserDataObject(userObjectIDs);
                                             startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
                                         }
                                     });
@@ -218,12 +220,38 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(LoginResponse loginResponse) {
                     final String userID = loginResponse.getUserObject(User.class).getObjectId();
 
-//                    editor.putString("SessionToken", loginResponse.getSessionToken().transportableRepresentation());
-                    editor.putString(MyApplication.SHAREDPREF_USERID, userID);
+                    LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID")
+                                    .equal(userID).searchQuery(),
+                            new Response.Listener<CMObjectResponse>() {
+                                @Override
+                                public void onResponse(CMObjectResponse response) {
+                                    List<CMObject> filler = response.getObjects();
 
-                    editor.apply();
-                    MyApplication.setUserID(userID);
-                    startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                                    if (filler.size() > 0) {
+                                        dialog.dismiss();
+                                        Toast.makeText(getApplicationContext(), "Logged in!", Toast.LENGTH_LONG).show();
+                                        MyApplication.setUserID(userID);
+                                        editor.putString(MyApplication.SHAREDPREF_USERID, userID);
+                                        editor.apply();
+                                        MyApplication.setUserDataObject((UserObjectIDs) filler.get(0));
+                                        startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                                    } else {
+                                        dialog.dismiss();
+                                        final UserObjectIDs userObjectIDs = new UserObjectIDs(userID);
+                                        userObjectIDs.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                                            @Override
+                                            public void onResponse(ObjectModificationResponse objectModificationResponse) {
+                                                MyApplication.setUserID(userID);
+                                                editor.putString(MyApplication.SHAREDPREF_USERID, userID);
+                                                editor.apply();
+                                                MyApplication.setUserDataObject(userObjectIDs);
+                                                startActivity(new Intent(getApplicationContext(), DashboardMainActivity.class));
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+
                 }
             }, new Response.ErrorListener() {
                 @Override

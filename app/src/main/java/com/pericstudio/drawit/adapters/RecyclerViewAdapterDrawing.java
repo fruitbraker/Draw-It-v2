@@ -44,10 +44,10 @@ public class RecyclerViewAdapterDrawing extends RecyclerView.Adapter<RecyclerVie
 
     private int lastPosition = -1;
 
-    public RecyclerViewAdapterDrawing(Context context, List<Drawing> data, String userID) {
+    public RecyclerViewAdapterDrawing(Context context, List<Drawing> data) {
         inflater = LayoutInflater.from(context);
         this.data = data;
-        this.userID = userID;
+        this.userID = MyApplication.userID;
     }
 
     /**

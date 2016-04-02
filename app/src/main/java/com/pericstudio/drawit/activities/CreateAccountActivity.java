@@ -131,6 +131,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         public void onResponse(CMObjectResponse cmObjectResponse) {
                             List<CMObject> users = cmObjectResponse.getObjects();
 
+                            //Email already in use
                             if (users.size() > 0) {
                                 T.showLong(getApplicationContext(), "Email is in use");
                             } else {
@@ -142,9 +143,12 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             public void onResponse(CMObjectResponse cmObjectResponse) {
                                                 List<CMObject> users = cmObjectResponse.getObjects();
 
+                                                //Username already taken
                                                 if (users.size() > 0) {
                                                     T.showLong(getApplicationContext(), "Username is already taken");
                                                 } else {
+
+                                                    //Create user
                                                     User newUser = new User(email, username, password, firstName, lastName);
                                                     newUser.create(getApplicationContext(), new Response.Listener<CreationResponse>() {
                                                         @Override
