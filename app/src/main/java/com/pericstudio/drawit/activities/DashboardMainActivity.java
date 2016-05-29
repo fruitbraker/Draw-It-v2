@@ -89,6 +89,10 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
         }
     }
 
+    /**
+     * Populate the drawer with essential info obtained from CloudMine's server.
+     * This method will only be called if the user logs in through CloudMine.
+     */
     private void populatDrawerCM() {
         final String userID = MyApplication.userID;
         if (userID != null) {
@@ -123,6 +127,7 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
     /**
      * Populates the drawer. Picture of the user's profile picture shows up if available.
      * Name and the number of drawings show up.
+     * This method will only be called if the user logs in through Facebook.
      */
     private void populateDrawerFB() {
         GraphRequest request = GraphRequest.newMeRequest(

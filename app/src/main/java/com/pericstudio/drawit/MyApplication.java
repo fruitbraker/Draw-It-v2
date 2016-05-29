@@ -54,6 +54,10 @@ public class MyApplication extends Application {
         MyApplication.context = getApplicationContext();
     }
 
+    /**
+     * Change the background music.
+     * @param musicId The music id from the res folder.
+     */
     public static void changeMusic(int musicId) {
         if(mMusic == null) {
             mMusic = new Music(musicId);
@@ -66,34 +70,63 @@ public class MyApplication extends Application {
         }
     }
 
+    /**
+     * Sets the UserObjectID object for easy access and use.
+     * @param obj the UserObjectId obtained from logging in
+     */
     public static void setUserDataObject(UserObjectIDs obj) {
         userData = obj;
     }
 
+    /**
+     * Gets the UserObjectID
+     * @return The UserObjectID object
+     */
     public static UserObjectIDs getUserData() {
         return userData;
     }
 
+    /**
+     * Pauses the music
+     */
     public static void onPauseMusic() {
         mMediaPlayer.pause();
     }
 
+    /**
+     * Resumes the music
+     */
     public static void onResumeMusic() {
         mMediaPlayer.start();
     }
 
+    /**
+     * Stops the music
+     */
     public static void onStopMusic() {
         T.showLongDebug(MyApplication.context, "" + mMusic.isCancelled());
     }
 
+    /**
+     * Gets the context of the application
+     * @return The context
+     */
     public static Context getContext() {
         return MyApplication.context;
     }
 
+    /**
+     * Sets the userID
+     * @param id the user's id
+     */
     public static void setUserID(String id) {
         userID = id;
     }
 
+    /**
+     * Handles the change of music asynchronously.
+     * Probably not necessary.
+     */
     private static class Music extends AsyncTask<Void, Void, Void> {
 
         int musicId;

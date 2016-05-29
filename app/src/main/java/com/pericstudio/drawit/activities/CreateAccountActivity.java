@@ -52,6 +52,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         init();
     }
 
+    /**
+     * Initializes the child views and components for this activity.
+     */
     private void init() {
         etEmail = (EditText) findViewById(R.id.etCreateEmail);
         etUsername = (EditText) findViewById(R.id.etCreateDisplayName);
@@ -61,6 +64,9 @@ public class CreateAccountActivity extends AppCompatActivity {
         etLastName = (EditText) findViewById(R.id.etLastName);
     }
 
+    /**
+     * Main method for creating the account.
+     */
     public void createAccountAsync(View view) {
         String emailInput = etEmail.getText().toString().trim();
         String usernameInput = etUsername.getText().toString().trim();
@@ -105,6 +111,10 @@ public class CreateAccountActivity extends AppCompatActivity {
         MyApplication.onResumeMusic();
     }
 
+    /**
+     * This AsyncTask creates the new account and stores it to CloudMine's server.
+     * There are checks if the email is already in use or the username is taken.
+     */
     private class CreateAccountTask extends AsyncTask<String, Void, Void> {
 
         String email, username, password, firstName, lastName;

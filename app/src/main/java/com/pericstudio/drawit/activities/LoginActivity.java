@@ -196,6 +196,10 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(this, CreateAccountActivity.class));
     }
 
+    /**
+     * This AsyncTask logs the user in asynchronously with CloudMine.
+     * If successful, the app will take the user to the Dashboard.
+     */
     private class LoginAsync extends AsyncTask<String, Void, Void> {
 
         String email, password;

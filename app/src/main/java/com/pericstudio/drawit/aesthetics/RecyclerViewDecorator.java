@@ -27,6 +27,13 @@ public class RecyclerViewDecorator extends RecyclerView.ItemDecoration{
 
     }
 
+    /**
+     * Used to have the child view of the RecyclerView to alternate colors.
+     * @param outRect not used
+     * @param view not used
+     * @param parent the RecyclerView that holds the individual elements
+     * @param state not used
+     */
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
