@@ -44,3 +44,4 @@ local.properties
 _sandbox
 
 app/src/main/java/com/pericstudio/drawit/APIKeys.java
+app/app-release.apk
