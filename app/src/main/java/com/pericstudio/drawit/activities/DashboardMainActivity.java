@@ -48,7 +48,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.cloudmine.api.CMObject;
 import com.cloudmine.api.CMUser;
+import com.cloudmine.api.SearchQuery;
+import com.cloudmine.api.db.LocallySavableCMObject;
 import com.cloudmine.api.rest.response.CMObjectResponse;
+import com.cloudmine.api.rest.response.ObjectModificationResponse;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -57,13 +60,16 @@ import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.fragments.TestFragmentOne;
 import com.pericstudio.drawit.fragments.TestFragmentThree;
 import com.pericstudio.drawit.fragments.TestFragmentTwo;
+import com.pericstudio.drawit.pojo.Drawing;
 import com.pericstudio.drawit.pojo.User;
+import com.pericstudio.drawit.pojo.UserObjectIDs;
 import com.pericstudio.drawit.utils.T;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class DashboardMainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -206,6 +212,41 @@ public class DashboardMainActivity extends AppCompatActivity implements Navigati
                     public void onClick(View v) {
                         final String tvNameContent = tvName.getText().toString().trim();
                         final String tvDesContent = tvDes.getText().toString().trim();
+
+                        final Drawing drawing = new Drawing(tvNameContent, tvDesContent);
+
+                        drawing.save(getApplicationContext(), new Response.Listener<ObjectModificationResponse>() {
+                            @Override
+                            public void onResponse(ObjectModificationResponse modificationResponse) {
+                                //code
+                                List<String> idList = modificationResponse.getCreatedObjectIds();
+                                final String drawingID = idList.get(0);
+
+                                LocallySavableCMObject.searchObjects(getApplicationContext(), SearchQuery.filter("ownerID").equal(MyApplication.userID).searchQuery(),
+                                        new Response.Listener<CMObjectResponse>() {
+                                            @Override
+                                            public void onResponse(CMObjectResponse response) {
+                                                List<CMObject> userObject = response.getObjects();
+                                                UserObjectIDs ids = (UserObjectIDs) userObject.get(0);
+                                                ids.addInProgress(drawingID);
+                                                MyApplication.setUserDataObject(ids);
+
+                                                ids.save();
+
+                                                T.showShortDebug(getApplicationContext(), "Refresh for update");
+
+                                                testDialog.dismiss();
+
+                                            }
+                                        });
+
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                //code
+                            }
+                        });
 
 
                     }

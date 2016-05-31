@@ -18,6 +18,7 @@ package com.pericstudio.drawit.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,6 +37,7 @@ import com.pericstudio.drawit.R;
 import com.pericstudio.drawit.adapters.RecyclerViewAdapterDrawing;
 import com.pericstudio.drawit.aesthetics.RecyclerViewDecorator;
 import com.pericstudio.drawit.pojo.Drawing;
+import com.pericstudio.drawit.utils.L;
 import com.pericstudio.drawit.utils.T;
 
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
     private RecyclerViewDecorator mDecorator;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ArrayList<Drawing> drawingsWIP = new ArrayList<>();
+
+    private FloatingActionButton fab;
 
     public TestFragmentOne() {
 
@@ -73,7 +77,7 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRecyclerWIP = (RecyclerView) layout.findViewById(R.id.recyclerWIP);
         mRecyclerWIP.setLayoutManager(new LinearLayoutManager(getActivity()));
-        loadWIPDrawings();
+//        loadWIPDrawings();
         mDrawingAdapter = new RecyclerViewAdapterDrawing(getActivity(), drawingsWIP);
         mRecyclerWIP.setAdapter(mDrawingAdapter);
         mDecorator = new RecyclerViewDecorator();
@@ -82,11 +86,29 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
         if(savedInstanceState != null) {
             T.showLongDebug(getActivity(), "Saved Instance State");
             drawingsWIP = savedInstanceState.getParcelableArrayList(STATE_DRAWINGS_WIP);
+            tvTest.setVisibility(View.INVISIBLE);
         } else {
             loadWIPDrawings();
         }
 
         mDrawingAdapter.setData(drawingsWIP);
+
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+
+        mRecyclerWIP.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy > 20) {
+                    L.d("Scrolling", dy + "");
+                    fab.hide();
+                } else if(dy < -20) {
+                    fab.show();
+                    L.d("Scrolling", dy + "");
+                }
+
+            }
+        });
 
         return layout;
     }
@@ -106,6 +128,7 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     private void loadWIPDrawings() {
+        drawingsWIP.clear();
         List<String> wipID = MyApplication.getUserData().getInProgressDrawingIDs();
         if (wipID.size() > 0) {
             tvTest.setVisibility(View.INVISIBLE);
@@ -113,8 +136,10 @@ public class TestFragmentOne extends Fragment implements SwipeRefreshLayout.OnRe
                 @Override
                 public void onResponse(CMObjectResponse response) {
                     for (CMObject item : response.getObjects()) {
+                        L.d("Hurr", "heheheh");
                         drawingsWIP.add(0, (Drawing) item);
                     }
+                    mDrawingAdapter.setData(drawingsWIP);
                 }
             });
 
